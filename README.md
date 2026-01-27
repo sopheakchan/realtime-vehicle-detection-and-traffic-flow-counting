@@ -40,6 +40,8 @@ Noise: up to 0.5% of pixels
 ## Results & Conclusion
 The model shows strong detection capabilities for Cars and Rickshaws, which are suitable for production use. 
 ![Image](https://github.com/user-attachments/assets/b4875891-cf87-4085-a6d0-c21b1fe9e96d)
+
+
 However, performance varies across classes due to dataset imbalance, particularly for Buses and Trucks, which appeared less frequently during data collection.
 
 ## Demonstration in Ui
