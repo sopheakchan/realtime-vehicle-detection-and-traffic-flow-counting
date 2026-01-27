@@ -19,7 +19,7 @@ Frame rate: 30 FPS
 ![Camera Angles](assets/angles-set.png)
 
 The dataset is organized into different sets, each with corresponding label files.
-Because of the large dataset size, it is not included directly in this repository. A download link will be provided via Kaggle.
+**[Download Dataset on Kaggle](https://www.kaggle.com/datasets/sopheakchan/traffic-flow-dataset)**
 
 ## Training Process
 The traffic object detection model was trained using YOLOv8m (medium variant) on the custom dataset. Training was conducted on Kaggle with GPU acceleration.
@@ -53,7 +53,7 @@ Users can upload a traffic video, define a detection area and a counting line on
 
 A processed video with bounding boxes, tracking IDs, and counts
 An Excel report containing detailed vehicle statistics
-A full demonstration video is available via a YouTube link.
+A full demonstration of the system is available on YouTube: https://youtu.be/gdLpEItEDIM
 
 ## Features
 
