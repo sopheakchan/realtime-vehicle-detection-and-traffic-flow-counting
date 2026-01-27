@@ -65,7 +65,7 @@ Automatically generated Excel report with class-wise counts and percentages
 
 ## Setup
 
-### 1. Create and activate virtual environment
+###  Create and activate virtual environment
 
 ```bash
 python -m venv env
@@ -73,17 +73,17 @@ env\Scripts\activate  # Windows
 source env/bin/activate  # macOS/Linux
 ```
 
-### 2. Install dependencies
+###  Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Make sure you have the model file
+###  Make sure you have the model file
 
 Place "trained" YOLO model as `best.pt` in the project root directory.
 
-### 4. Run the application
+###  Run the application
 
 ```bash
 cd ui
@@ -100,20 +100,6 @@ The app will start at `http://localhost:5000`
 4. Start processing and wait for completion
 5. Download the processed video and Excel report
 
-## Project Structure
-
-```
-yolo_model_ui/
-├── best.pt                 # YOLO model weights
-├── requirements.txt        # Python dependencies
-├── ui/
-│   ├── flask_app.py       # Flask backend
-│   ├── templates/
-│   │   └── index.html     # Web interface
-│   ├── uploads/           # Uploaded videos
-│   └── outputs/           # Processed videos and reports
-└── env/                   # Virtual environment
-```
 
 ## Notes
 Processing time depends on video length and resolution. The system processes each frame for accurate tracking, so longer videos will take more time. Progress is shown in real-time with percentage and frame counts.
