@@ -6,7 +6,7 @@ This project presents a YOLOv8m-based model optimized for real-time vehicle dete
 As Phnom Penh undergoes rapid urbanization, its transportation infrastructure faces increasing challenges from severe traffic congestion. Current traffic management systems rely heavily on static signal timers that do not adapt to real-time fluctuations in vehicle density. This results in inefficient traffic flow, long waiting times, wasted fuel, and reduced productivit. This project aims to address these issues by enabling real-time vehicle detection and counting using computer vision.
 
 ## Dataset
-Due to the lack of publicly available datasets tailored to Cambodian traffic conditions, we constructed a custom dataset. Video data were collected at Santhor Mok Pedestrian Overpass, Phnom Penh, Cambodia, a busy road intersection.
+Due to the lack of publicly available datasets tailored to Cambodian traffic conditions, we constructed a custom dataset. Video data were collected at Santhor Mok Pedestrian Bridge, Phnom Penh, Cambodia, a busy road intersection.
 
 ![Data Collection Location](assets/location.png)
 
