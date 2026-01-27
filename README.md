@@ -12,7 +12,7 @@ Due to the lack of publicly available datasets tailored to Cambodian traffic con
 
 Capture angles: 5 different camera angles
 Time: Around 9:00 AM
-Device: iPhone 11
+Device: iPhone
 Rexolution: 1920 × 1080
 Frame rate: 30 FPS
 
