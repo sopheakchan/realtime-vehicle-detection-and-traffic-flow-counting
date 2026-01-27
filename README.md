@@ -25,7 +25,6 @@ Because of the large dataset size, it is not included directly in this repositor
 The traffic object detection model was trained using YOLOv8m (medium variant) on the custom dataset. Training was conducted on Kaggle with GPU acceleration.
 
 Configuration details:
-
 Object classes (5): Bus, Car, Motorcycle, Rickshaw, Truck
 
 Base model: YOLOv8m (pre-trained weights)
@@ -40,14 +39,12 @@ Noise: up to 0.5% of pixels
 
 ## Results & Conclusion
 
-The model shows strong detection capabilities for Cars and Rickshaws, which are suitable for production use. However, performance varies across classes due to dataset imbalance, particularly for Buses and Trucks, which appeared less frequently during data collection.
+The model shows strong detection capabilities for Cars and Rickshaws, which are suitable for production use. 
+
+However, performance varies across classes due to dataset imbalance, particularly for Buses and Trucks, which appeared less frequently during data collection.
 
 ## Demonstration in Ui
 A web-based user interface is provided to demonstrate the full pipeline from video upload to vehicle counting and result export.
-
-<video src="assets/tested-video.mp4" controls width="100%">
-  Your browser does not support the video tag.
-</video>
 
 ## What It Does
 
