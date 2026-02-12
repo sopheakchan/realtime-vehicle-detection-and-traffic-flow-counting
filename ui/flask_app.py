@@ -22,7 +22,7 @@ app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
-#Hawktuah
+#Hawktuahuuuuuu
 
 # Global State
 video_path = None
