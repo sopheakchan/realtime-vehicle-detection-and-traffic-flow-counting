@@ -164,6 +164,12 @@
                     <input type="number" id="fpsInput" value="30" min="1" max="120" placeholder="e.g. 30">
                     <small style="color:gray">Lower FPS speeds up analysis but may reduce accuracy.</small>
                 </div>
+
+                <!-- NEW: Toggle for Detection Area -->
+                <div class="config-item" style="flex-direction: row; align-items: center; gap: 12px; margin-top: 20px;">
+                    <input type="checkbox" id="showAreaToggle" checked style="width: 20px; height: 20px; cursor: pointer;">
+                    <label for="showAreaToggle" style="cursor: pointer;">Show Detection Area Polygon in final video</label>
+                </div>
             </div>
 
             <div class="instruction" id="instruction">📍 Click 4 points to define the Detection Zone</div>
@@ -282,7 +288,7 @@
                 detectionPoints.forEach(p => ctx.lineTo(p.x, p.y));
                 if (detectionPoints.length === 4) {
                     ctx.closePath();
-                    ctx.fillStyle = 'rgba(79, 70, 229, 0)';
+                    ctx.fillStyle = 'rgba(79, 70, 229, 0.2)';
                     ctx.fill();
                 }
                 ctx.stroke();
@@ -321,13 +327,17 @@
             const scale = firstFrameImage.width / canvas.width;
             const fpsValue = document.getElementById('fpsInput').value;
             
+            // NEW: Get checkbox value
+            const showArea = document.getElementById('showAreaToggle').checked;
+            
             fetch('/set_regions', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     detection_area: detectionPoints.map(p => [p.x*scale, p.y*scale]),
                     counting_line: linePoints.map(p => [p.x*scale, p.y*scale]),
-                    processing_fps: parseInt(fpsValue)
+                    processing_fps: parseInt(fpsValue),
+                    show_detection_area: showArea  // Send to backend
                 })
             }).then(() => {
                 document.getElementById('step-setup').classList.add('hidden');
@@ -336,7 +346,7 @@
                 checkProgress();
             });
         }
-
+        
         function checkProgress() {
             progressInterval = setInterval(() => {
                 fetch('/progress').then(res => res.json()).then(data => {

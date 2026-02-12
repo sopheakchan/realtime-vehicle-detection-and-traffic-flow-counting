@@ -29,18 +29,19 @@ counting_line = []
 processing_fps = 30 # Default
 processing_progress = 0
 processing_status = "idle"
-is_cancelled = False # Flag for cancellation
+is_cancelled = False 
 counter_instance = None
 current_frame = 0
 total_frames = 0
 output_video_path = None
+show_detection_area = True # Global flag
 
 class VehicleLineCounter:
-    def __init__(self, detection_area, counting_line, model_path="../best.pt"):
+    def __init__(self, detection_area, counting_line, show_area=True, model_path="../best.pt"):
+        self.show_area = show_area
         self.detection_area = np.array(detection_area, np.int32)
         self.line_start = (int(counting_line[0][0]), int(counting_line[0][1]))
         self.line_end = (int(counting_line[1][0]), int(counting_line[1][1]))
-        # Change model path to absolute or relative correctly
         self.model = YOLO(model_path) 
         self.tracked_vehicles = {}
         self.total_count = 0
@@ -77,14 +78,17 @@ class VehicleLineCounter:
         return False
 
     def draw_ui(self, frame):
-        # Draw regions
-        overlay = frame.copy()
-        cv2.fillPoly(overlay, [self.detection_area], (0, 255, 0))
-        cv2.addWeighted(overlay, 0.3, frame, 0.7, 0, frame)
-        cv2.polylines(frame, [self.detection_area], True, (0, 255, 0), 2)
+        # Only draw the Detection Polygon if the toggle is enabled
+        if self.show_area:
+            overlay = frame.copy()
+            cv2.fillPoly(overlay, [self.detection_area], (0, 255, 0))
+            cv2.addWeighted(overlay, 0.3, frame, 0.7, 0, frame)
+            cv2.polylines(frame, [self.detection_area], True, (0, 255, 0), 2)
+        
+        # Always draw the yellow counting line
         cv2.line(frame, self.line_start, self.line_end, (0, 255, 255), 4)
         
-        # Draw stats
+        # Draw stats dashboard
         y_offset = 40
         cv2.rectangle(frame, (10, 10), (300, 40 + len(self.class_names) * 35), (0, 0, 0), -1)
         cv2.putText(frame, f"TOTAL: {self.total_count}", (20, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
@@ -102,29 +106,22 @@ class VehicleLineCounter:
             total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             width, height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             
-            # Calculate frame skip: if video is 30fps and user wants 10fps, skip every 3 frames
             frame_skip = max(1, int(orig_fps / target_fps)) if target_fps > 0 else 1
-            
             fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-            # The output video will be saved at the TARGET fps specified by the user
             out = cv2.VideoWriter(output_path, fourcc, target_fps, (width, height))
             
             processing_status = "processing"
-            current_frame = 0
             
             while True:
                 if is_cancelled:
-                    print("Processing cancelled by user.")
                     processing_status = "idle"
                     break
 
                 ret, frame = cap.read()
                 if not ret: break
                 
-                # Check current_frame vs total frames for progress
                 current_frame = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
                 
-                # Run YOLO
                 results = self.model.track(source=frame, imgsz=640, conf=0.25, verbose=False, persist=True)
                 
                 if results[0].boxes is not None and results[0].boxes.id is not None:
@@ -145,13 +142,11 @@ class VehicleLineCounter:
                 frame = self.draw_ui(frame)
                 out.write(frame)
                 
-                # Update progress
                 processing_progress = min(int((current_frame / total_frames) * 100), 100)
                 
-                # Skip frames to match target FPS
                 if frame_skip > 1:
                     for _ in range(frame_skip - 1):
-                        cap.grab() # More efficient than cap.read()
+                        cap.grab() 
             
             cap.release()
             out.release()
@@ -183,7 +178,7 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload_video():
     global video_path, is_cancelled
-    is_cancelled = False # Reset cancel flag on new upload
+    is_cancelled = False 
     file = request.files['video']
     filename = secure_filename(file.filename)
     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -201,19 +196,30 @@ def get_first_frame():
 
 @app.route('/set_regions', methods=['POST'])
 def set_regions():
-    global detection_area, counting_line, processing_fps
+    global detection_area, counting_line, processing_fps, show_detection_area
     data = request.json
-    detection_area = data.get('detection_area')
-    counting_line = data.get('counting_line')
-    processing_fps = int(data.get('processing_fps', 30)) # Capture custom FPS
+    detection_area = data.get('detection_area', [])
+    counting_line = data.get('counting_line', [])
+    processing_fps = int(data.get('processing_fps', 30))
+    # Capture the toggle value from frontend
+    show_detection_area = data.get('show_detection_area', True) 
     return jsonify({'success': True})
 
 @app.route('/process', methods=['POST'])
 def process_video():
+    global video_path, detection_area, counting_line, processing_fps, show_detection_area
     global counter_instance, processing_status, processing_progress, output_video_path, is_cancelled
+    
     is_cancelled = False
     output_video_path = os.path.join(app.config['OUTPUT_FOLDER'], f'out_{datetime.now().strftime("%H%M%S")}.mp4')
-    counter_instance = VehicleLineCounter(detection_area, counting_line, model_path="../best.pt")
+    
+    # Initialize instance with the show_area flag
+    counter_instance = VehicleLineCounter(
+        detection_area, 
+        counting_line, 
+        show_area=show_detection_area, 
+        model_path="../best.pt"
+    )
     
     thread = threading.Thread(target=counter_instance.process_video, args=(video_path, output_video_path, processing_fps))
     thread.daemon = True
@@ -228,6 +234,7 @@ def cancel_processing():
 
 @app.route('/progress')
 def get_progress():
+    global processing_progress, processing_status, current_frame, total_frames
     return jsonify({
         'progress': processing_progress, 
         'status': processing_status,
