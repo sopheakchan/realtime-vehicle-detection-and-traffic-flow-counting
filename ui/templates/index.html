@@ -15,7 +15,7 @@
             --text-main: #1f2937;
             --text-muted: #6b7280;
             --border: #e5e7eb;
-            --sidebar-width: 70px;
+            --sidebar-width: 80px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,7 +44,6 @@
 
         .section h2 { font-size: 1.5rem; margin-bottom: 25px; font-weight: 700; }
 
-        /* Configuration Grid */
         .config-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -65,15 +64,16 @@
             font-size: 16px;
         }
 
-        /* --- PRETTIER TOOLBAR & WORKSPACE --- */
+        /* --- WORKSPACE --- */
         .workspace {
             display: flex;
-            background: #1e293b; /* Dark theme for the editor area */
+            background: #1e293b;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
             border: 1px solid #334155;
+            min-height: 650px;
         }
 
         .sidebar {
@@ -83,13 +83,23 @@
             flex-direction: column;
             align-items: center;
             padding: 20px 0;
-            gap: 15px;
+            gap: 10px; /* Reduced gap to fit without scrolling */
             border-right: 1px solid #334155;
+            /* Removed overflow-y: auto to prevent scrollbar */
+        }
+
+        .tool-group-label {
+            color: #475569;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            font-weight: 700;
         }
 
         .tool-btn {
-            width: 48px;
-            height: 48px;
+            width: 44px; /* Slightly smaller to ensure fit */
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -100,38 +110,22 @@
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
-            min-width: unset; /* Override previous global style */
-            padding: 0;
         }
 
-        .tool-btn svg { width: 24px; height: 24px; fill: currentColor; }
-
-        .tool-btn:hover {
-            background: #334155;
-            color: white;
-        }
-
+        .tool-btn svg { width: 22px; height: 22px; fill: currentColor; }
+        .tool-btn:hover { background: #334155; color: white; }
+        
         .tool-btn.active {
             background: var(--primary);
             color: white;
             box-shadow: 0 0 15px rgba(79, 70, 229, 0.4);
         }
 
-        .tool-btn.active::after {
-            content: '';
-            position: absolute;
-            left: -10px;
-            width: 4px;
-            height: 20px;
-            background: var(--primary);
-            border-radius: 0 4px 4px 0;
-        }
-
         .sidebar-divider {
-            width: 30px;
+            width: 40px;
             height: 1px;
             background: #334155;
-            margin: 10px 0;
+            margin: 5px 0;
         }
 
         .canvas-area {
@@ -151,11 +145,8 @@
             border-bottom: 1px solid #334155;
         }
 
-        .instruction-text {
-            color: #cbd5e1;
-            font-size: 14px;
-            font-weight: 500;
-        }
+        .instruction-text { color: #cbd5e1; font-size: 14px; font-weight: 500; }
+        .status-text { color: #94a3b8; font-size: 12px; }
 
         #canvas-container {
             flex-grow: 1;
@@ -163,62 +154,43 @@
             align-items: center;
             justify-content: center;
             overflow: auto;
-            min-height: 500px;
+            position: relative;
+            background: #000;
         }
 
-        canvas {
-            display: block;
-            cursor: crosshair;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-        }
+        canvas { display: block; cursor: crosshair; }
 
-        /* --- END TOOLBAR STYLES --- */
-
+        /* Upload Zone */
         .upload-zone {
             border: 3px dashed #d1d5db;
             border-radius: 12px;
-            padding: 100px 40px;
+            padding: 80px 40px;
             text-align: center;
             background: #f9fafb;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
             margin-bottom: 30px;
         }
-        .upload-zone.dragover { border-color: var(--primary); background: #eef2ff; transform: scale(1.01); }
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: #eef2ff;
+            transform: scale(1.01);
+        }
 
         .btn-group { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
-
         button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            min-width: 180px;
+            background: var(--primary); color: white; border: none;
+            padding: 16px 32px; border-radius: 10px; font-size: 16px; font-weight: 600;
+            cursor: pointer; min-width: 180px;
         }
-        button:hover { transform: translateY(-1px); opacity: 0.9; }
         button.btn-danger { background: var(--danger); }
+        button.btn-danger:hover { background: var(--danger-hover); }
 
-        .progress-wrapper { text-align: center; margin: 40px 0; }
         .progress-container {
-            width: 100%;
-            background: #e5e7eb;
-            border-radius: 999px;
-            overflow: hidden;
-            height: 40px;
-            position: relative;
-            margin-bottom: 15px;
+            width: 100%; background: #e5e7eb; border-radius: 999px;
+            overflow: hidden; height: 40px; position: relative; margin: 20px 0;
         }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #4f46e5, #818cf8);
-            width: 0%;
-        }
-
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #4f46e5, #818cf8); width: 0%; }
         .hidden { display: none; }
     </style>
 </head>
@@ -226,86 +198,99 @@
     <div class="container">
         <header>
             <h1>AI Traffic Analysis System</h1>
-            <p class="subtitle">Real-Time Vehicle Detection and Flow Counting</p>
         </header>
         
         <!-- STEP 1: UPLOAD -->
         <div class="section" id="step-upload">
             <h2>1. Video Selection</h2>
             <div class="upload-zone" id="dropZone" onclick="document.getElementById('videoFile').click()">
-                <div style="font-size: 50px; margin-bottom: 15px;">📤</div>
-                <div id="uploadText" style="font-weight: 700; font-size: 1.2rem;">Drag & Drop Video File</div>
-                <div style="color: var(--text-muted);">or click to browse (MP4, AVI, MOV)</div>
+                <div style="font-size: 40px; margin-bottom: 10px;">📤</div>
+                <div id="uploadText" style="font-weight: 700;">Click or Drag Video File Here</div>
             </div>
             <input type="file" id="videoFile" accept="video/*" style="display: none;" onchange="handleFileSelect()">
-            <div class="btn-group">
-                <button onclick="uploadVideo()">Upload & Initialize</button>
-            </div>
+            <div class="btn-group"><button onclick="uploadVideo()">Upload & Initialize</button></div>
         </div>
         
-        <!-- STEP 2: SETUP WORKSPACE -->
+        <!-- STEP 2: SETUP -->
         <div class="section hidden" id="step-setup">
             <h2>2. Design Detection Zones</h2>
             
             <div class="config-grid">
                 <div class="config-item">
-                    <label for="fpsInput">Processing FPS</label>
+                    <label>Processing FPS</label>
                     <input type="number" id="fpsInput" value="30" min="1" max="120">
                 </div>
                 <div class="config-item" style="flex-direction: row; align-items: center; gap: 12px; margin-top: 20px;">
-                    <input type="checkbox" id="showAreaToggle" checked style="width: 20px; height: 20px; cursor: pointer;">
-                    <label for="showAreaToggle" style="cursor: pointer; font-size: 14px;">Show Detection Area in final video</label>
+                    <input type="checkbox" id="showAreaToggle" checked style="width: 20px; height: 20px;">
+                    <label>Show Detection Area in final video</label>
                 </div>
             </div>
 
             <div class="workspace">
-                <!-- Sidebar Toolbar -->
                 <div class="sidebar">
-                    <button class="tool-btn active" id="tool-poly" onclick="setTool('polygon')" title="Polygon Tool (4 points)">
+                    <div class="tool-group-label">Zones</div>
+                    <!-- Manual Polygon -->
+                    <button class="tool-btn active" id="tool-polygon" onclick="setTool('polygon')" title="Manual Polygon">
                         <svg viewBox="0 0 24 24"><path d="M17,15.7L22,12.9V11L17,8.2L12,11V12.9L17,15.7M17,19L10,15.1V16.4L17,20.3L24,16.4V15.1L17,19M17,2L0,11.5V13.5L17,23L24,19V17L17,21L2,12.5L17,4.1L32,12.5V13.5L30,14.6V12.5L17,2Z" /></svg>
                     </button>
-                    <button class="tool-btn" id="tool-line" onclick="setTool('line')" title="Line Tool (2 points)">
+                    <!-- Rectangle -->
+                    <button class="tool-btn" id="tool-rect" onclick="setTool('rect')" title="Add Rectangle">
+                        <svg viewBox="0 0 24 24"><path d="M19,19H5V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg>
+                    </button>
+                    <!-- Circle -->
+                    <button class="tool-btn" id="tool-circle" onclick="setTool('circle')" title="Add Circle">
+                        <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>
+                    </button>
+                    <!-- Star -->
+                    <button class="tool-btn" id="tool-star" onclick="setTool('star')" title="Add Star">
+                        <svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" /></svg>
+                    </button>
+
+                    <div class="sidebar-divider"></div>
+                    <div class="tool-group-label">Lines</div>
+
+                    <!-- 2-Point Line -->
+                    <button class="tool-btn" id="tool-line" onclick="setTool('line')" title="Simple 2-Point Line">
                         <svg viewBox="0 0 24 24"><path d="M15,3V7.59L7.59,15H3V21H9V16.41L16.41,9H21V3M17,5H19V7H17" /></svg>
+                    </button>
+                    <!-- Polyline -->
+                    <button class="tool-btn" id="tool-polyline" onclick="setTool('polyline')" title="Multi-Point Line">
+                        <svg viewBox="0 0 24 24"><path d="M22 6L19 12L14 8L9 16L2 12" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+                    </button>
+                    <!-- Freehand/Wiggle -->
+                    <button class="tool-btn" id="tool-freehand" onclick="setTool('freehand')" title="Freehand Wiggle Line">
+                        <svg viewBox="0 0 24 24"><path d="M12,2C7,2 5,6 5,9C5,13 9,14 9,18C9,21 11.5,22 12,22C12.5,22 15,21 15,18C15,14 19,13 19,9C19,6 17,2 12,2Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
                     </button>
                     
                     <div class="sidebar-divider"></div>
-                    
-                    <button class="tool-btn" onclick="resetPoints()" title="Clear All Drawings" style="color: var(--danger);">
+                    <!-- Delete -->
+                    <button class="tool-btn" onclick="deleteSelected()" title="Delete Selected Object" style="color: var(--danger);">
                         <svg viewBox="0 0 24 24"><path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" /></svg>
                     </button>
                 </div>
 
-                <!-- Canvas Main View -->
                 <div class="canvas-area">
                     <div class="workspace-header">
-                        <div class="instruction-text" id="instruction">📍 Select a tool to begin drawing</div>
-                        <div class="instruction-text" style="font-size: 11px; opacity: 0.6;">Drag points to adjust</div>
+                        <div class="instruction-text" id="instruction">📍 Select a tool to begin</div>
+                        <div class="status-text" id="selectionStatus">No object selected</div>
                     </div>
-                    <div id="canvas-container">
-                        <canvas id="canvas"></canvas>
-                    </div>
+                    <div id="canvas-container"><canvas id="canvas"></canvas></div>
                 </div>
             </div>
             
             <div class="btn-group">
                 <button onclick="startProcessing()">Launch AI Analysis</button>
-                <button class="btn-danger" style="background: transparent; color: var(--danger); border: 1px solid var(--danger);" onclick="location.reload()">Reset All</button>
+                <button class="btn-danger" style="background:transparent; color:var(--danger); border:1px solid var(--danger)" onclick="clearAll()">Reset All</button>
             </div>
         </div>
         
         <!-- STEP 3: PROCESSING -->
         <div class="section hidden" id="step-processing">
             <h2>3. AI Engine Processing</h2>
-            <div class="progress-wrapper">
-                <div class="progress-stats" id="progressPercent">0%</div>
-                <div class="progress-container">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-                <div class="frame-counter" id="frameStats">Initializing frames...</div>
-            </div>
-            <div class="btn-group">
-                <button class="btn-danger" id="cancelBtn" onclick="cancelProcessing()">Cancel Analysis</button>
-            </div>
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+            <p id="progressPercent" style="text-align:center;">0%</p>
+            <p id="frameStats" style="text-align:center; color:gray;"></p>
+            <div class="btn-group"><button class="btn-danger" onclick="cancelProcessing()">Cancel Analysis</button></div>
         </div>
         
         <!-- STEP 4: COMPLETE -->
@@ -323,37 +308,58 @@
         let canvas, ctx, firstFrameImage;
         let detectionPoints = [];
         let linePoints = [];
-        let selectedTool = 'polygon';
         
+        let selectedTool = 'polygon';
+        let isDrawing = false;
+        
+        // Interaction State
         let isDragging = false;
-        let dragTarget = null;
-        const pointRadius = 10;
+        let dragTarget = null; // {type: 'poly'|'line', index: 0}
+        
+        // Selection State
+        let selectedObject = null; // 'detection' or 'line'
+        
+        const pointRadius = 8;
 
+        // --- FILE HANDLING ---
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('videoFile');
+        const uploadText = document.getElementById('uploadText');
         
-        // Setup Drag & Drop
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(n => dropZone.addEventListener(n, e => {e.preventDefault(); e.stopPropagation();}));
-        dropZone.addEventListener('dragover', () => dropZone.classList.add('dragover'));
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-        dropZone.addEventListener('drop', e => {
-            dropZone.classList.remove('dragover');
-            fileInput.files = e.dataTransfer.files;
-            handleFileSelect();
+        // Drag & Drop Listeners
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
         });
 
-        function handleFileSelect() {
-            if (fileInput.files.length) document.getElementById('uploadText').textContent = "Selected: " + fileInput.files[0].name;
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
 
+        ['dragenter', 'dragover'].forEach(() => dropZone.classList.add('dragover'));
+        ['dragleave', 'drop'].forEach(() => dropZone.classList.remove('dragover'));
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            handleFileSelect();
+        }
+
+        function handleFileSelect() {
+            if(fileInput.files.length) uploadText.textContent = "Selected: " + fileInput.files[0].name;
+        }
+        
         function uploadVideo() {
-            if (!fileInput.files.length) return alert('Please select a file');
+            if (!fileInput.files.length) return alert('Select file first');
             const formData = new FormData();
             formData.append('video', fileInput.files[0]);
-            document.getElementById('uploadText').textContent = "Uploading...";
+            uploadText.textContent = "Uploading...";
             fetch('/upload', {method: 'POST', body: formData})
                 .then(res => res.json())
-                .then(data => data.success ? loadFirstFrame() : alert('Error: ' + data.error));
+                .then(data => data.success ? loadFirstFrame() : alert(data.error));
         }
 
         function loadFirstFrame() {
@@ -364,94 +370,205 @@
                     document.getElementById('step-setup').classList.remove('hidden');
                     canvas = document.getElementById('canvas');
                     ctx = canvas.getContext('2d');
-                    const scale = Math.min(1, 1100 / img.width);
+                    const scale = Math.min(1, 1000 / img.width);
                     canvas.width = img.width * scale; canvas.height = img.height * scale;
                     firstFrameImage = img;
                     initCanvasEvents();
                     redraw();
-                    updateInstruction();
                 };
                 img.src = data.image;
             });
         }
 
+        // --- TOOLBAR ---
         function setTool(tool) {
             selectedTool = tool;
             document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('tool-' + (tool === 'polygon' ? 'poly' : 'line')).classList.add('active');
-            updateInstruction();
-        }
-
-        function updateInstruction() {
-            const inst = document.getElementById('instruction');
-            if (selectedTool === 'polygon') {
-                inst.textContent = detectionPoints.length < 4 
-                    ? `📍 Polygon: Click to place point ${detectionPoints.length + 1}/4` 
-                    : `✅ Polygon Complete. Drag points to adjust.`;
+            // Try to find the button directly, or fall back to general mapping
+            const btn = document.getElementById('tool-' + tool);
+            if(btn) btn.classList.add('active');
+            
+            // If selecting a shape tool (rect, circle, star), update instruction
+            const instruction = document.getElementById('instruction');
+            if (['rect', 'circle', 'star'].includes(tool)) {
+                instruction.textContent = "📍 Click on canvas to place the shape";
+            } else if (tool === 'freehand') {
+                instruction.textContent = "✏️ Click and drag to draw a wiggle line";
+            } else if (tool === 'polyline') {
+                instruction.textContent = "📍 Click to add points. Right-click to finish.";
             } else {
-                inst.textContent = linePoints.length < 2 
-                    ? `📏 Line: Click to place point ${linePoints.length + 1}/2` 
-                    : `✅ Line Complete. Drag points to adjust.`;
+                instruction.textContent = "📍 Draw manually or drag points";
             }
         }
 
-        function resetPoints() {
-            if(confirm("Clear all drawings?")) {
+        function deleteSelected() {
+            if (!selectedObject) return alert("Select an object (Line or Polygon) first by clicking on it.");
+            if (selectedObject === 'detection') {
                 detectionPoints = [];
+                selectedObject = null;
+            } else if (selectedObject === 'line') {
                 linePoints = [];
-                redraw();
-                updateInstruction();
+                selectedObject = null;
+            }
+            redraw();
+            updateStatus();
+        }
+        
+        function clearAll() {
+            if(confirm("Delete everything?")) {
+                detectionPoints = []; linePoints = []; selectedObject = null; redraw();
             }
         }
 
+        function updateStatus() {
+            const el = document.getElementById('selectionStatus');
+            if (!selectedObject) el.textContent = "No object selected";
+            else el.textContent = selectedObject === 'detection' ? "Detection Zone Selected" : "Counting Line Selected";
+        }
+
+        // --- GEOMETRY GENERATORS ---
+        function createRect(cx, cy, size=100) {
+            return [
+                {x: cx - size, y: cy - size}, {x: cx + size, y: cy - size},
+                {x: cx + size, y: cy + size}, {x: cx - size, y: cy + size}
+            ];
+        }
+
+        function createCircle(cx, cy, radius=80, steps=16) {
+            let pts = [];
+            for(let i=0; i<steps; i++) {
+                let angle = (i / steps) * Math.PI * 2;
+                pts.push({ x: cx + Math.cos(angle)*radius, y: cy + Math.sin(angle)*radius });
+            }
+            return pts;
+        }
+
+        function createStar(cx, cy, outer=80, inner=30, points=5) {
+            let pts = [];
+            let angle = Math.PI / points;
+            for(let i=0; i<2*points; i++) {
+                let r = (i % 2 === 0) ? outer : inner;
+                let currA = i * angle - Math.PI/2;
+                pts.push({ x: cx + Math.cos(currA)*r, y: cy + Math.sin(currA)*r });
+            }
+            return pts;
+        }
+
+        // --- CANVAS EVENTS ---
         function initCanvasEvents() {
             canvas.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);
+            // Stop context menu on right click (for polyline finish)
+            canvas.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                isDrawing = false; // Stop polyline
+                setTool('polygon'); // Reset tool
+            });
         }
 
-        function getMousePos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            return {
-                x: (e.clientX - rect.left) * scaleX,
-                y: (e.clientY - rect.top) * scaleY
-            };
+        function getPos(e) {
+            const r = canvas.getBoundingClientRect();
+            const sx = canvas.width / r.width;
+            const sy = canvas.height / r.height;
+            return { x: (e.clientX - r.left)*sx, y: (e.clientY - r.top)*sy };
         }
 
         function onMouseDown(e) {
-            const pos = getMousePos(e);
-            let found = checkHit(pos);
-            if (found) {
+            const pos = getPos(e);
+
+            // 1. Check Point Drag (Priority)
+            const hit = checkPointHit(pos);
+            if (hit) {
                 isDragging = true;
-                dragTarget = found;
+                dragTarget = hit;
+                // Auto-select the object belonging to the point
+                selectedObject = hit.type === 'poly' ? 'detection' : 'line';
+                redraw();
+                updateStatus();
                 return;
             }
-            if (selectedTool === 'polygon' && detectionPoints.length < 4) {
-                detectionPoints.push({x: pos.x, y: pos.y});
-            } else if (selectedTool === 'line' && linePoints.length < 2) {
+
+            // 2. Check Object Selection (Clicking on the shape body/line)
+            const objHit = checkObjectHit(pos);
+            if (objHit) {
+                selectedObject = objHit;
+                redraw();
+                updateStatus();
+                return;
+            } else {
+                // Clicked empty space: Deselect unless drawing new geometry
+                if (!['polyline', 'freehand', 'rect', 'circle', 'star'].includes(selectedTool)) {
+                    selectedObject = null;
+                    updateStatus();
+                    redraw();
+                }
+            }
+
+            // 3. Drawing Logic
+            if (selectedTool === 'rect') {
+                detectionPoints = createRect(pos.x, pos.y);
+                setTool('polygon');
+            } else if (selectedTool === 'circle') {
+                detectionPoints = createCircle(pos.x, pos.y);
+                setTool('polygon');
+            } else if (selectedTool === 'star') {
+                detectionPoints = createStar(pos.x, pos.y);
+                setTool('polygon');
+            } else if (selectedTool === 'freehand') {
+                isDrawing = true;
+                linePoints = [{x: pos.x, y: pos.y}]; // Start new line
+            } else if (selectedTool === 'polyline') {
                 linePoints.push({x: pos.x, y: pos.y});
+            } else if (selectedTool === 'line') {
+                // Standard 2-point line
+                if (linePoints.length >= 2) linePoints = []; 
+                linePoints.push({x: pos.x, y: pos.y});
+            } else if (selectedTool === 'polygon') {
+                 // Manual Polygon
+                 detectionPoints.push({x: pos.x, y: pos.y});
             }
             redraw();
-            updateInstruction();
         }
 
         function onMouseMove(e) {
-            const pos = getMousePos(e);
+            const pos = getPos(e);
+
             if (isDragging && dragTarget) {
-                if (dragTarget.type === 'poly') detectionPoints[dragTarget.index] = {x: pos.x, y: pos.y};
-                else linePoints[dragTarget.index] = {x: pos.x, y: pos.y};
+                if (dragTarget.type === 'poly') detectionPoints[dragTarget.index] = pos;
+                else linePoints[dragTarget.index] = pos;
                 redraw();
-            } else {
-                const hit = checkHit(pos);
-                canvas.style.cursor = hit ? 'move' : 'crosshair';
+                return;
+            }
+
+            if (isDrawing && selectedTool === 'freehand') {
+                const last = linePoints[linePoints.length-1];
+                const dist = Math.hypot(pos.x - last.x, pos.y - last.y);
+                if (dist > 5) linePoints.push(pos);
+                redraw();
+                return;
+            }
+
+            // Cursor styling
+            const ptHit = checkPointHit(pos);
+            if (ptHit) canvas.style.cursor = 'move';
+            else {
+                 const objHit = checkObjectHit(pos);
+                 canvas.style.cursor = objHit ? 'pointer' : 'crosshair';
             }
         }
 
-        function onMouseUp() { isDragging = false; dragTarget = null; updateInstruction(); }
+        function onMouseUp() {
+            isDragging = false;
+            dragTarget = null;
+            if (selectedTool === 'freehand') {
+                isDrawing = false;
+                setTool('line'); 
+            }
+        }
 
-        function checkHit(pos) {
+        // --- HIT TESTING ---
+        function checkPointHit(pos) {
             for (let i = 0; i < linePoints.length; i++) {
                 if (Math.hypot(linePoints[i].x - pos.x, linePoints[i].y - pos.y) < pointRadius) return { type: 'line', index: i };
             }
@@ -461,47 +578,85 @@
             return null;
         }
 
+        function checkObjectHit(pos) {
+            // Check Polygon (Inside)
+            if (detectionPoints.length >= 3) {
+                ctx.beginPath();
+                ctx.moveTo(detectionPoints[0].x, detectionPoints[0].y);
+                for(let i=1; i<detectionPoints.length; i++) ctx.lineTo(detectionPoints[i].x, detectionPoints[i].y);
+                ctx.closePath();
+                if (ctx.isPointInPath(pos.x, pos.y)) return 'detection';
+            }
+            // Check Line (Near stroke)
+            if (linePoints.length >= 2) {
+                for (let i=0; i<linePoints.length-1; i++) {
+                    const p1 = linePoints[i];
+                    const p2 = linePoints[i+1];
+                    const d = distToSegment(pos, p1, p2);
+                    if (d < 10) return 'line';
+                }
+            }
+            return null;
+        }
+
+        function distToSegment(p, v, w) {
+            const l2 = (v.x - w.x)**2 + (v.y - w.y)**2;
+            if (l2 == 0) return Math.hypot(p.x - v.x, p.y - v.y);
+            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
+        }
+
         function redraw() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
             ctx.drawImage(firstFrameImage, 0, 0, canvas.width, canvas.height);
-            
+
             // Draw Polygon
             if (detectionPoints.length > 0) {
-                ctx.strokeStyle = '#4f46e5';
-                ctx.lineWidth = 3;
+                const isSel = selectedObject === 'detection';
+                ctx.strokeStyle = isSel ? '#ffffff' : '#4f46e5';
+                ctx.lineWidth = isSel ? 4 : 3;
+                
                 ctx.beginPath();
                 ctx.moveTo(detectionPoints[0].x, detectionPoints[0].y);
                 detectionPoints.forEach(p => ctx.lineTo(p.x, p.y));
-                if (detectionPoints.length === 4) {
-                    ctx.closePath();
-                    ctx.fillStyle = 'rgba(79, 70, 229, 0.3)';
-                    ctx.fill();
-                }
+                ctx.closePath();
+                
+                ctx.fillStyle = isSel ? 'rgba(79, 70, 229, 0.4)' : 'rgba(79, 70, 229, 0.2)';
+                ctx.fill();
                 ctx.stroke();
-                detectionPoints.forEach((p, i) => {
-                    ctx.fillStyle = '#4f46e5';
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI); ctx.fill();
-                    ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+
+                detectionPoints.forEach(p => {
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2*Math.PI);
+                    ctx.fillStyle = '#4f46e5'; ctx.fill();
+                    ctx.strokeStyle = 'white'; ctx.lineWidth=2; ctx.stroke();
                 });
             }
-            
+
             // Draw Line
             if (linePoints.length > 0) {
-                ctx.strokeStyle = '#fbbf24';
-                ctx.lineWidth = 5;
+                const isSel = selectedObject === 'line';
+                ctx.strokeStyle = isSel ? '#ffffff' : '#fbbf24';
+                ctx.lineWidth = isSel ? 6 : 5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
                 ctx.beginPath();
                 ctx.moveTo(linePoints[0].x, linePoints[0].y);
-                if (linePoints[1]) ctx.lineTo(linePoints[1].x, linePoints[1].y);
+                for(let i=1; i<linePoints.length; i++) ctx.lineTo(linePoints[i].x, linePoints[i].y);
                 ctx.stroke();
+
                 linePoints.forEach(p => {
-                    ctx.fillStyle = '#fbbf24';
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2 * Math.PI); ctx.fill();
-                    ctx.strokeStyle = 'black'; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 2*Math.PI);
+                    ctx.fillStyle = '#fbbf24'; ctx.fill();
+                    ctx.strokeStyle = 'black'; ctx.lineWidth=2; ctx.stroke();
                 });
             }
         }
 
+        let progressInterval;
         function startProcessing() {
-            if (detectionPoints.length !== 4 || linePoints.length !== 2) return alert('Define polygon (4 pts) and line (2 pts) first.');
+            if (!detectionPoints.length || linePoints.length < 2) return alert("Please define zones first");
             const scale = firstFrameImage.width / canvas.width;
             fetch('/set_regions', {
                 method: 'POST',
@@ -516,27 +671,29 @@
                 document.getElementById('step-setup').classList.add('hidden');
                 document.getElementById('step-processing').classList.remove('hidden');
                 fetch('/process', {method: 'POST'});
-                checkProgress();
+                progressInterval = setInterval(checkProgress, 1000);
             });
         }
 
         function checkProgress() {
-            const interval = setInterval(() => {
-                fetch('/progress').then(res => res.json()).then(data => {
-                    const prog = data.progress || 0;
-                    document.getElementById('progressBar').style.width = prog + '%';
-                    document.getElementById('progressPercent').textContent = prog + '%';
-                    document.getElementById('frameStats').textContent = `Frame ${data.current_frame || 0} / ${data.total_frames || 0}`;
-                    if (data.status === 'complete') {
-                        clearInterval(interval);
-                        document.getElementById('step-processing').classList.add('hidden');
-                        document.getElementById('step-complete').classList.remove('hidden');
-                    }
-                });
-            }, 1000);
+            fetch('/progress').then(res => res.json()).then(data => {
+                const prog = data.progress || 0;
+                document.getElementById('progressBar').style.width = prog + '%';
+                document.getElementById('progressPercent').textContent = prog + '%';
+                document.getElementById('frameStats').textContent = `Frame ${data.current_frame || 0} / ${data.total_frames || 0}`;
+                if (data.status === 'complete') {
+                    clearInterval(progressInterval);
+                    document.getElementById('step-processing').classList.add('hidden');
+                    document.getElementById('step-complete').classList.remove('hidden');
+                }
+            });
         }
 
-        function cancelProcessing() { if (confirm("Stop analysis?")) fetch('/cancel', {method: 'POST'}).then(() => location.reload()); }
+        function cancelProcessing() { 
+            if (confirm("Stop analysis?")) {
+                fetch('/cancel', {method: 'POST'}).then(() => location.reload()); 
+            }
+        }
         function downloadVideo() { window.location.href = '/download_video'; }
         function downloadExcel() { window.location.href = '/download_excel'; }
     </script>
