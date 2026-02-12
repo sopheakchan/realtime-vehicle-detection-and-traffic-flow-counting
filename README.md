@@ -65,30 +65,31 @@ Automatically generated Excel report with class-wise counts and percentages
 
 ## Project Structure
 
-
+```
 yolo_model_ui/
 ├── best.pt                    # Trained YOLOv8m model weights
 ├── train.ipynb                # Trained notebook (Kaggle)
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # Project documentation
-├── .gitignore                 # Git ignore
+├── .gitignore                 # Git ignore rules
 │
 ├── assets/                    # Documentation images/videos
 │   ├── location.png
 │   ├── angles-set.png
 │   └── tested-video.mp4
 │
-├── ui/                       # Flask web application
-│   ├── flask_app.py          # Main backend server
+├── ui/                        # Flask web application
+│   ├── flask_app.py           # Main backend server
 │   ├── templates/
-│   │   └── index.html        # Frontend interface
-│   ├── uploads/              # User uploaded videos
-│   └── outputs/              # Processed videos & Excel reports
+│   │   └── index.html         # Frontend interface
+│   ├── uploads/               # User uploaded videos
+│   └── outputs/               # Processed videos & Excel reports
 │
-├── env/                       # Virtual environment
+├── env/                       # Virtual environment 
 │
 ├── inference-set/             # Test videos/images
 └── uploads/                   # Backup video storage
+```
 
 ## Setup
 
