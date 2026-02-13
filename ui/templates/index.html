@@ -3,77 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Traffic Analysis System</title>
+    <title>AI Traffic Analysis | Dark Mode</title>
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
+            /* Dark Mode Color Palette */
+            --bg-main: #0f172a;        /* Slate 900 */
+            --bg-card: #1e293b;        /* Slate 800 */
+            --bg-input: #334155;       /* Slate 700 */
+            --primary: #6366f1;        /* Indigo 500 */
+            --primary-hover: #4f46e5;  /* Indigo 600 */
+            --text-main: #f1f5f9;      /* Slate 100 */
+            --text-muted: #94a3b8;     /* Slate 400 */
+            --border: #334155;
+            --accent-timeline: #fbbf24; /* Amber 400 */
             --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --bg: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
-            --sidebar-width: 80px;
+            --sidebar-width: 70px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg);
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-main);
             color: var(--text-main);
             padding: 40px 20px;
         }
 
         .container { max-width: 1400px; margin: 0 auto; }
 
-        header { text-align: center; margin-bottom: 50px; }
-        h1 { font-size: 2.5rem; font-weight: 800; color: #111827; margin-bottom: 10px; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 2.5rem; font-weight: 800; color: white; letter-spacing: -1px; margin-bottom: 8px; }
         .subtitle { color: var(--text-muted); font-size: 1.1rem; }
 
         .section {
-            background: var(--card-bg);
+            background: var(--bg-card);
             border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            margin-bottom: 30px;
+            padding: 30px;
+            margin-bottom: 25px;
             border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
-        .section h2 { font-size: 1.5rem; margin-bottom: 25px; font-weight: 700; }
+        .section h2 { font-size: 1.3rem; margin-bottom: 20px; font-weight: 600; color: white; display: flex; align-items: center; gap: 10px; }
 
+        /* Configuration Grid */
         .config-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
             padding: 20px;
-            background: #f8fafc;
+            background: #020617; /* Very Dark */
             border-radius: 12px;
             border: 1px solid var(--border);
         }
 
-        .config-item { display: flex; flex-direction: column; gap: 8px; }
-        .config-item label { font-weight: 600; font-size: 14px; color: var(--text-main); }
-        .config-item input[type="number"] {
+        .config-item { display: flex; flex-direction: column; gap: 10px; }
+        .config-item label { font-weight: 600; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input[type="number"] {
+            background: var(--bg-input);
+            color: white;
+            border: 1px solid var(--border);
             padding: 12px;
-            border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 16px;
         }
+        input[type="number"]:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+        /* Toggle Switches */
+        .toggle-group { display: flex; flex-direction: column; gap: 15px; }
+        .toggle-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+        .toggle-item label { cursor: pointer; color: var(--text-main); text-transform: none; font-size: 15px; }
+
+        /* --- TIMELINE SLIDER --- */
+        .timeline-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #020617;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--accent-timeline);
+            font-weight: 700;
+            font-family: monospace;
+        }
+        .slider-track {
+            position: relative;
+            height: 40px;
+            background: #334155;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .slider-fill {
+            position: absolute;
+            height: 100%;
+            background: rgba(99, 102, 241, 0.3);
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+            top: 0;
+            z-index: 1;
+        }
+        .slider-handle {
+            position: absolute;
+            width: 20px;
+            height: 100%;
+            background: var(--accent-timeline);
+            top: 0;
+            cursor: ew-resize;
+            z-index: 2;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .slider-handle::after {
+            content: ''; height: 15px; width: 2px;
+            border-left: 2px solid rgba(0,0,0,0.4); border-right: 2px solid rgba(0,0,0,0.4);
+        }
+        .handle-left { left: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+        .handle-right { right: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 
         /* --- WORKSPACE --- */
         .workspace {
             display: flex;
-            background: #1e293b;
+            background: #000;
             border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            margin-bottom: 30px;
-            border: 1px solid #334155;
-            min-height: 650px;
+            overflow: visible; /* Changed to visible for flyouts */
+            border: 1px solid var(--border);
+            min-height: 600px;
         }
 
         .sidebar {
@@ -83,127 +148,120 @@
             flex-direction: column;
             align-items: center;
             padding: 20px 0;
-            gap: 10px;
-            border-right: 1px solid #334155;
+            gap: 15px;
+            border-right: 1px solid var(--border);
+            z-index: 10;
         }
 
-        .tool-group-label {
-            color: #475569;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
-            font-weight: 700;
-        }
-
-        .tool-btn {
+        /* --- ILLUSTRATOR STYLE TOOLBAR --- */
+        .tool-wrapper {
+            position: relative;
             width: 44px;
             height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            border: none;
-            background: transparent;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
         }
-
-        .tool-btn svg { width: 22px; height: 22px; fill: currentColor; }
-        .tool-btn:hover { background: #334155; color: white; }
         
-        .tool-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 0 15px rgba(79, 70, 229, 0.4);
-        }
-
-        .sidebar-divider {
-            width: 40px;
-            height: 1px;
-            background: #334155;
-            margin: 5px 0;
-        }
-
-        .canvas-area {
-            flex-grow: 1;
+        /* The main visible button */
+        .tool-btn {
+            width: 100%; height: 100%;
+            border-radius: 6px; border: none; background: transparent;
+            color: #94a3b8; cursor: pointer; transition: all 0.2s;
             position: relative;
-            display: flex;
-            flex-direction: column;
-            background: #000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tool-btn:hover { background: var(--bg-input); color: white; }
+        .tool-btn.active { background: var(--primary); color: white; }
+        /* SVG Styling fixes */
+        .tool-btn svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .tool-btn svg.fill-current { fill: currentColor; stroke: none; }
+
+        /* The tiny triangle indicating hidden options */
+        .has-options::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            width: 0; 
+            height: 0; 
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 4px solid currentColor;
+            opacity: 0.7;
         }
 
-        .workspace-header {
+        /* The Flyout Menu */
+        .tool-flyout {
+            position: absolute;
+            left: 50px; /* Push to right of sidebar */
+            top: 0;
             background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 4px 4px 15px rgba(0,0,0,0.5);
+            width: 50px;
+            z-index: 100;
+        }
+
+        /* Show flyout on hover of wrapper */
+        .tool-wrapper:hover .tool-flyout {
+            display: flex;
+        }
+
+        .canvas-area { flex-grow: 1; display: flex; flex-direction: column; background: #000; position: relative; overflow: hidden; border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+        
+        .workspace-header {
             padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #334155;
+            background: #0f172a;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between;
         }
+        #canvas-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; overflow: auto; }
 
-        .instruction-text { color: #cbd5e1; font-size: 14px; font-weight: 500; }
-        .status-text { color: #94a3b8; font-size: 12px; }
-
-        #canvas-container {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: auto;
-            position: relative;
-            background: #000;
-        }
-
-        canvas { display: block; cursor: crosshair; }
-
+        /* --- UPLOAD ZONE --- */
         .upload-zone {
-            border: 3px dashed #d1d5db;
+            border: 2px dashed var(--border);
             border-radius: 12px;
-            padding: 80px 40px;
+            padding: 80px;
             text-align: center;
-            background: #f9fafb;
-            transition: all 0.2s ease;
+            background: rgba(30, 41, 59, 0.5);
+            transition: 0.3s;
             cursor: pointer;
-            margin-bottom: 30px;
         }
-        .upload-zone.dragover {
-            border-color: var(--primary);
-            background: #eef2ff;
-            transform: scale(1.01);
-        }
+        .upload-zone:hover, .upload-zone.dragover { border-color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+        .upload-icon { font-size: 48px; margin-bottom: 15px; filter: grayscale(1); }
 
-        .btn-group { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        /* --- BUTTONS --- */
+        .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 30px; }
         button {
             background: var(--primary); color: white; border: none;
-            padding: 16px 32px; border-radius: 10px; font-size: 16px; font-weight: 600;
-            cursor: pointer; min-width: 180px;
+            padding: 14px 30px; border-radius: 8px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: 0.2s;
         }
-        button.btn-danger { background: var(--danger); }
-        button.btn-danger:hover { background: var(--danger-hover); }
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        button.btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        button.btn-danger:hover { background: var(--danger); color: white; }
 
-        .progress-container {
-            width: 100%; background: #e5e7eb; border-radius: 999px;
-            overflow: hidden; height: 40px; position: relative; margin: 20px 0;
-        }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #4f46e5, #818cf8); width: 0%; }
         .hidden { display: none; }
+        .progress-container { width: 100%; height: 6px; background: var(--bg-input); border-radius: 10px; overflow: hidden; margin: 20px 0; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>AI Traffic Analysis System</h1>
+            <h1>AI Traffic Analysis</h1>
+            <div class="subtitle">Advanced Computer Vision System</div>
         </header>
         
         <!-- STEP 1: UPLOAD -->
         <div class="section" id="step-upload">
-            <h2>1. Video Selection</h2>
+            <h2>🎥 1. Video Selection</h2>
             <div class="upload-zone" id="dropZone" onclick="document.getElementById('videoFile').click()">
-                <div style="font-size: 40px; margin-bottom: 10px;">📤</div>
-                <div id="uploadText" style="font-weight: 700;">Click or Drag Video File Here</div>
+                <div class="upload-icon">📤</div>
+                <div id="uploadText" style="font-weight: 500; color: var(--text-muted);">Click or Drag Video File Here</div>
             </div>
             <input type="file" id="videoFile" accept="video/*" style="display: none;" onchange="handleFileSelect()">
             <div class="btn-group"><button onclick="uploadVideo()">Upload & Initialize</button></div>
@@ -211,112 +269,165 @@
         
         <!-- STEP 2: SETUP -->
         <div class="section hidden" id="step-setup">
-            <h2>2. Design Detection Zones</h2>
+            <h2>⚙️ 2. Configuration & Zones</h2>
             
             <div class="config-grid">
+                <!-- Timeline Trimmer -->
+                <div class="config-item" style="grid-column: 1 / -1;">
+                    <label>Video Timeline Trimmer</label>
+                    <div class="timeline-container">
+                        <div class="timeline-header">
+                            <span id="timeStart">00:00</span>
+                            <span id="timeDuration">Duration: 0s</span>
+                            <span id="timeEnd">00:00</span>
+                        </div>
+                        <div class="slider-track" id="sliderTrack">
+                            <div class="slider-fill" id="sliderFill"></div>
+                            <div class="slider-handle handle-left" id="handleLeft"></div>
+                            <div class="slider-handle handle-right" id="handleRight"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="config-item">
                     <label>Processing FPS</label>
                     <input type="number" id="fpsInput" value="30" min="1" max="120">
                 </div>
-                <div class="config-item" style="flex-direction: row; align-items: center; gap: 12px; margin-top: 20px;">
-                    <input type="checkbox" id="showAreaToggle" checked style="width: 20px; height: 20px;">
-                    <label>Show Detection Area in final video</label>
+                
+                <div class="config-item toggle-group">
+                    <div class="toggle-item">
+                        <input type="checkbox" id="showAreaToggle" checked>
+                        <label for="showAreaToggle">Show Detection Polygons</label>
+                    </div>
+                    <div class="toggle-item">
+                        <input type="checkbox" id="showLineToggle" checked>
+                        <label for="showLineToggle">Show Counting Lines</label>
+                    </div>
                 </div>
             </div>
 
             <div class="workspace">
                 <div class="sidebar">
-                    <div class="tool-group-label">Zones</div>
-                    <!-- Manual Polygon -->
-                    <button class="tool-btn active" id="tool-polygon" onclick="setTool('polygon')" title="Manual Polygon">
-                        <svg viewBox="0 0 24 24"><path d="M17,15.7L22,12.9V11L17,8.2L12,11V12.9L17,15.7M17,19L10,15.1V16.4L17,20.3L24,16.4V15.1L17,19M17,2L0,11.5V13.5L17,23L24,19V17L17,21L2,12.5L17,4.1L32,12.5V13.5L30,14.6V12.5L17,2Z" /></svg>
-                    </button>
-                    <!-- Rectangle -->
-                    <button class="tool-btn" id="tool-rect" onclick="setTool('rect')" title="Add Rectangle">
-                        <svg viewBox="0 0 24 24"><path d="M19,19H5V5H19M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg>
-                    </button>
-                    <!-- Circle -->
-                    <button class="tool-btn" id="tool-circle" onclick="setTool('circle')" title="Add Circle">
-                        <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>
-                    </button>
-                    <!-- Star -->
-                    <button class="tool-btn" id="tool-star" onclick="setTool('star')" title="Add Star">
-                        <svg viewBox="0 0 24 24"><path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z" /></svg>
-                    </button>
-
-                    <div class="sidebar-divider"></div>
-                    <div class="tool-group-label">Lines</div>
-
-                    <!-- 2-Point Line -->
-                    <button class="tool-btn" id="tool-line" onclick="setTool('line')" title="Simple 2-Point Line">
-                        <svg viewBox="0 0 24 24"><path d="M15,3V7.59L7.59,15H3V21H9V16.41L16.41,9H21V3M17,5H19V7H17" /></svg>
-                    </button>
-                    <!-- Polyline -->
-                    <button class="tool-btn" id="tool-polyline" onclick="setTool('polyline')" title="Multi-Point Line">
-                        <svg viewBox="0 0 24 24"><path d="M22 6L19 12L14 8L9 16L2 12" fill="none" stroke="currentColor" stroke-width="2" /></svg>
-                    </button>
-                    <!-- Freehand/Wiggle -->
-                    <button class="tool-btn" id="tool-freehand" onclick="setTool('freehand')" title="Freehand Wiggle Line">
-                        <svg viewBox="0 0 24 24"><path d="M12,2C7,2 5,6 5,9C5,13 9,14 9,18C9,21 11.5,22 12,22C12.5,22 15,21 15,18C15,14 19,13 19,9C19,6 17,2 12,2Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-                    </button>
+                    <div style="font-size:10px; color:var(--text-muted); font-weight:700; margin-bottom:5px;">TOOLS</div>
                     
-                    <div class="sidebar-divider"></div>
-                    <!-- Delete -->
-                    <button class="tool-btn" onclick="deleteSelected()" title="Delete Selected Object" style="color: var(--danger);">
-                        <svg viewBox="0 0 24 24"><path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" /></svg>
+                    <!-- DETECTION ZONES GROUP (Default: Rectangle) -->
+                    <div class="tool-wrapper">
+                        <button class="tool-btn active has-options" id="btn-group-polygon" title="Detection Zones">
+                            <!-- Rectangle Tool Icon (Illustrator Style) -->
+                            <svg id="icon-display-polygon" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="0" />
+                            </svg>
+                        </button>
+                        <div class="tool-flyout">
+                            <!-- Rectangle -->
+                            <button class="tool-btn" onclick="setTool('rect')" title="Rectangle" id="sub-tool-rect">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" /></svg>
+                            </button>
+                            <!-- Rounded Rect -->
+                            <button class="tool-btn" onclick="setTool('rounded_rect')" title="Rounded Rectangle" id="sub-tool-rounded_rect">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" /></svg>
+                            </button>
+                            <!-- Circle/Ellipse -->
+                            <button class="tool-btn" onclick="setTool('circle')" title="Ellipse" id="sub-tool-circle">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg>
+                            </button>
+                            <!-- Polygon -->
+                            <button class="tool-btn" onclick="setTool('polygon')" title="Polygon" id="sub-tool-polygon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2L2 8.5L5.5 21H18.5L22 8.5L12 2Z" /></svg>
+                            </button>
+                            <!-- Star -->
+                            <button class="tool-btn" onclick="setTool('star')" title="Star" id="sub-tool-star">
+                                <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DETECTION LINES GROUP (Default: Pen Tool) -->
+                    <div class="tool-wrapper">
+                        <button class="tool-btn has-options" id="btn-group-line" title="Counting Lines">
+                            <!-- Pen Tool Icon (Illustrator Style) -->
+                            <svg id="icon-display-line" viewBox="0 0 24 24" class="fill-current">
+                                <path d="M15.5 4.5l-1.5 1.5 4 4 1.5-1.5c0.5-0.5 0.5-1.5 0-2l-2-2c-0.5-0.5-1.5-0.5-2 0zM13 7l-9 9v4h4l9-9-4-4z" />
+                            </svg>
+                        </button>
+                        <div class="tool-flyout">
+                            <!-- Pen Tool (Adjustable/Polyline) -->
+                            <button class="tool-btn" onclick="setTool('polyline')" title="Pen Tool" id="sub-tool-polyline">
+                                <svg viewBox="0 0 24 24" class="fill-current"><path d="M15.5 4.5l-1.5 1.5 4 4 1.5-1.5c0.5-0.5 0.5-1.5 0-2l-2-2c-0.5-0.5-1.5-0.5-2 0zM13 7l-9 9v4h4l9-9-4-4z" /></svg>
+                            </button>
+                            <!-- Line Segment -->
+                            <button class="tool-btn" onclick="setTool('line')" title="Line Segment" id="sub-tool-line">
+                                <svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="4" /></svg>
+                            </button>
+                            <!-- Freehand/Pencil -->
+                            <button class="tool-btn" onclick="setTool('freehand')" title="Pencil Tool" id="sub-tool-freehand">
+                                <svg viewBox="0 0 24 24" class="fill-current"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="width: 40px; height: 1px; background: var(--border);"></div>
+                    <!-- DELETE BUTTON -->
+                    <button class="tool-btn" onclick="deleteSelected()" style="color:var(--danger)" title="Delete">
+                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" class="fill-current"/></svg>
                     </button>
                 </div>
 
                 <div class="canvas-area">
                     <div class="workspace-header">
-                        <div class="instruction-text" id="instruction">📍 Select a tool to begin</div>
-                        <div class="status-text" id="selectionStatus">No object selected</div>
+                        <div id="instruction" style="color: var(--text-muted); font-size:13px;">📍 Draw zones</div>
+                        <div id="selectionStatus" style="color: var(--primary); font-size:12px; font-weight:700;">Ready</div>
                     </div>
                     <div id="canvas-container"><canvas id="canvas"></canvas></div>
                 </div>
             </div>
             
             <div class="btn-group">
-                <button onclick="startProcessing()">Launch AI Analysis</button>
-                <button class="btn-danger" style="background:transparent; color:var(--danger); border:1px solid var(--danger)" onclick="clearAll()">Reset All</button>
+                <button onclick="startProcessing()">🚀 Start Analysis</button>
+                <button class="btn-danger" onclick="clearAll()">Reset All</button>
             </div>
         </div>
         
         <!-- STEP 3: PROCESSING -->
         <div class="section hidden" id="step-processing">
-            <h2>3. AI Engine Processing</h2>
+            <h2>🧠 Processing Video...</h2>
             <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-            <p id="progressPercent" style="text-align:center;">0%</p>
-            <p id="frameStats" style="text-align:center; color:gray;"></p>
-            <div class="btn-group"><button class="btn-danger" onclick="cancelProcessing()">Cancel Analysis</button></div>
+            <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:14px;">
+                <span id="progressPercent">0%</span>
+                <span id="frameStats">Initializing...</span>
+            </div>
+            <div class="btn-group"><button class="btn-danger" onclick="cancelProcessing()">Stop Analysis</button></div>
         </div>
         
         <!-- STEP 4: COMPLETE -->
         <div class="section hidden" id="step-complete">
-            <h2 style="color: #059669;">✅ Analysis Complete</h2>
+            <h2 style="color: #10b981;">✅ Analysis Complete</h2>
             <div class="btn-group">
                 <button onclick="downloadVideo()">Download Video</button>
                 <button style="background:#10b981" onclick="downloadExcel()">Download Excel</button>
-                <button style="background:#6b7280" onclick="location.reload()">New Analysis</button>
+                <button style="background:var(--bg-input)" onclick="location.reload()">Start New</button>
             </div>
         </div>
     </div>
 
     <script>
+        // --- GLOBAL VARS ---
         let canvas, ctx, firstFrameImage;
-        
-        // --- DATA STRUCTURE FOR MULTIPLE OBJECTS ---
-        // Each shape: { id: Date.now(), type: 'polygon'|'line', points: [{x,y},...] }
         let shapes = []; 
-        let currentShape = null; // The shape currently being drawn
-        let selectedShape = null; // The shape currently selected for editing/deleting
-        
-        let selectedTool = 'polygon';
+        let currentShape = null; 
+        let selectedShape = null; 
+        let selectedTool = 'rect'; // Default to Rectangle for Polygons
         let isDrawing = false;
         let isDragging = false;
-        let dragTarget = null; // { shapeIndex: int, pointIndex: int }
-        
+        let dragTarget = null; 
         const pointRadius = 6;
+
+        // Timeline Vars
+        let videoDuration = 0; 
+        let videoTotalFrames = 0;
+        let videoFPS = 0;
+        let trimStartPct = 0; 
+        let trimEndPct = 1;   
 
         // --- FILE HANDLING ---
         const dropZone = document.getElementById('dropZone');
@@ -343,7 +454,8 @@
             if (!fileInput.files.length) return alert('Select file first');
             const formData = new FormData();
             formData.append('video', fileInput.files[0]);
-            uploadText.textContent = "Uploading...";
+            uploadText.textContent = "Uploading & Analyzing...";
+            
             fetch('/upload', {method: 'POST', body: formData})
                 .then(res => res.json())
                 .then(data => data.success ? loadFirstFrame() : alert(data.error));
@@ -351,6 +463,11 @@
 
         function loadFirstFrame() {
             fetch('/first_frame').then(res => res.json()).then(data => {
+                videoDuration = data.duration_sec;
+                videoTotalFrames = data.total_frames;
+                videoFPS = data.fps;
+                initTimeline();
+
                 const img = new Image();
                 img.onload = () => {
                     document.getElementById('step-upload').classList.add('hidden');
@@ -367,54 +484,77 @@
             });
         }
 
-        // --- TOOLBAR ---
-        function setTool(tool) {
-            selectedTool = tool;
-            // Finish any current shape immediately when switching tools
-            if(currentShape) {
-                currentShape = null;
-                isDrawing = false;
-            }
-
-            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
-            const btn = document.getElementById('tool-' + tool);
-            if(btn) btn.classList.add('active');
+        // --- TIMELINE LOGIC ---
+        function initTimeline() {
+            const track = document.getElementById('sliderTrack');
+            const handleL = document.getElementById('handleLeft');
+            const handleR = document.getElementById('handleRight');
+            const fill = document.getElementById('sliderFill');
             
-            const instruction = document.getElementById('instruction');
-            if (['rect', 'circle', 'star'].includes(tool)) instruction.textContent = "📍 Click to place shape";
-            else if (tool === 'freehand') instruction.textContent = "✏️ Drag to draw";
-            else if (['polyline', 'polygon'].includes(tool)) instruction.textContent = "📍 Click to add points. Right-click to finish.";
-            else instruction.textContent = "📍 Click to start drawing";
+            let isDraggingL = false;
+            let isDraggingR = false;
+
+            updateTimelineUI();
+
+            handleL.addEventListener('mousedown', (e) => { isDraggingL = true; e.preventDefault(); });
+            handleR.addEventListener('mousedown', (e) => { isDraggingR = true; e.preventDefault(); });
+            window.addEventListener('mouseup', () => { isDraggingL = false; isDraggingR = false; });
+            window.addEventListener('mousemove', (e) => {
+                if (!isDraggingL && !isDraggingR) return;
+                const rect = track.getBoundingClientRect();
+                let pct = (e.clientX - rect.left) / rect.width;
+                pct = Math.max(0, Math.min(1, pct));
+                if (isDraggingL) trimStartPct = Math.min(pct, trimEndPct - 0.05);
+                else if (isDraggingR) trimEndPct = Math.max(pct, trimStartPct + 0.05);
+                updateTimelineUI();
+            });
         }
 
-        function deleteSelected() {
-            if (!selectedShape) return alert("Select a shape first.");
-            shapes = shapes.filter(s => s !== selectedShape);
-            selectedShape = null;
-            redraw();
-            updateStatus();
-        }
-        
-        function clearAll() {
-            if(confirm("Delete all zones and lines?")) {
-                shapes = []; selectedShape = null; currentShape = null; redraw();
-            }
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
-        function updateStatus() {
-            const el = document.getElementById('selectionStatus');
-            if (!selectedShape) el.textContent = "No object selected";
-            else el.textContent = `${selectedShape.type.toUpperCase()} Selected`;
+        function updateTimelineUI() {
+            const handleL = document.getElementById('handleLeft');
+            const handleR = document.getElementById('handleRight');
+            const fill = document.getElementById('sliderFill');
+            
+            handleL.style.left = (trimStartPct * 100) + '%';
+            handleR.style.left = 'auto'; handleR.style.right = ((1 - trimEndPct) * 100) + '%';
+            fill.style.left = (trimStartPct * 100) + '%';
+            fill.style.width = ((trimEndPct - trimStartPct) * 100) + '%';
+
+            const startTime = trimStartPct * videoDuration;
+            const endTime = trimEndPct * videoDuration;
+            document.getElementById('timeStart').textContent = formatTime(startTime);
+            document.getElementById('timeEnd').textContent = formatTime(endTime);
+            document.getElementById('timeDuration').textContent = `Duration: ${(endTime - startTime).toFixed(1)}s`;
         }
 
         // --- GEOMETRY GENERATORS ---
-        function createRect(cx, cy, size=100) {
+        function createRect(cx, cy, w=200, h=150) {
             return [
-                {x: cx - size, y: cy - size}, {x: cx + size, y: cy - size},
-                {x: cx + size, y: cy + size}, {x: cx - size, y: cy + size}
+                {x: cx - w/2, y: cy - h/2}, {x: cx + w/2, y: cy - h/2},
+                {x: cx + w/2, y: cy + h/2}, {x: cx - w/2, y: cy + h/2}
             ];
         }
-        function createCircle(cx, cy, radius=80, steps=16) {
+        function createRoundedRect(cx, cy, w=200, h=150, r=20) {
+            let pts = [];
+            const steps = 6;
+            const x = cx - w/2, y = cy - h/2;
+            pts.push({x: x+r, y: y}); pts.push({x: x+w-r, y: y});
+            for(let i=1; i<=steps; i++) { let a = -Math.PI/2 + (i/steps)*Math.PI/2; pts.push({x: x+w-r + Math.cos(a)*r, y: y+r + Math.sin(a)*r}); }
+            pts.push({x: x+w, y: y+h-r});
+            for(let i=1; i<=steps; i++) { let a = 0 + (i/steps)*Math.PI/2; pts.push({x: x+w-r + Math.cos(a)*r, y: y+h-r + Math.sin(a)*r}); }
+            pts.push({x: x+r, y: y+h});
+            for(let i=1; i<=steps; i++) { let a = Math.PI/2 + (i/steps)*Math.PI/2; pts.push({x: x+r + Math.cos(a)*r, y: y+h-r + Math.sin(a)*r}); }
+            pts.push({x: x, y: y+r});
+            for(let i=1; i<=steps; i++) { let a = Math.PI + (i/steps)*Math.PI/2; pts.push({x: x+r + Math.cos(a)*r, y: y+r + Math.sin(a)*r}); }
+            return pts;
+        }
+        function createCircle(cx, cy, radius=80, steps=20) {
             let pts = [];
             for(let i=0; i<steps; i++) {
                 let angle = (i / steps) * Math.PI * 2;
@@ -433,90 +573,114 @@
             return pts;
         }
 
-        // --- CANVAS EVENTS ---
+        // --- DRAWING LOGIC ---
+        function setTool(tool) {
+            selectedTool = tool;
+            if(currentShape) { currentShape = null; isDrawing = false; }
+            
+            const polygonTypes = ['polygon', 'rect', 'rounded_rect', 'circle', 'star'];
+            const lineTypes = ['line', 'polyline', 'freehand'];
+            
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (polygonTypes.includes(tool)) {
+                document.getElementById('btn-group-polygon').classList.add('active');
+                // Update Parent Icon
+                const subBtn = document.getElementById('sub-tool-' + tool);
+                if(subBtn) document.getElementById('icon-display-polygon').innerHTML = subBtn.querySelector('svg').innerHTML;
+            } else if (lineTypes.includes(tool)) {
+                document.getElementById('btn-group-line').classList.add('active');
+                // Update Parent Icon
+                const subBtn = document.getElementById('sub-tool-' + tool);
+                if(subBtn) document.getElementById('icon-display-line').innerHTML = subBtn.querySelector('svg').innerHTML;
+            }
+
+            const instructionMap = {
+                'polygon': "Click to add points. Right-click to finish.",
+                'rect': "Click to place Rectangle",
+                'rounded_rect': "Click to place Rounded Rectangle",
+                'circle': "Click to place Circle",
+                'star': "Click to place Star",
+                'line': "Click start, Click end.",
+                'polyline': "Click points. Right-click to finish (Adjustable).",
+                'freehand': "Drag mouse to draw."
+            };
+            document.getElementById('instruction').textContent = instructionMap[tool] || "Select a tool";
+        }
+
+        function deleteSelected() {
+            if (!selectedShape) return alert("Select a shape first.");
+            shapes = shapes.filter(s => s !== selectedShape);
+            selectedShape = null; redraw(); updateStatus();
+        }
+        
+        function clearAll() {
+            if(confirm("Reset all?")) { shapes = []; selectedShape = null; currentShape = null; redraw(); }
+        }
+
+        function updateStatus() {
+            const el = document.getElementById('selectionStatus');
+            el.textContent = selectedShape ? `${selectedShape.type.toUpperCase()} SELECTED` : "READY";
+        }
+
         function initCanvasEvents() {
             canvas.addEventListener('mousedown', onMouseDown);
             window.addEventListener('mousemove', onMouseMove);
             window.addEventListener('mouseup', onMouseUp);
             canvas.addEventListener('contextmenu', e => {
                 e.preventDefault();
-                // Right click finishes current shape
-                if(currentShape) {
-                    currentShape = null;
-                    isDrawing = false;
-                    redraw();
-                }
+                if(currentShape) { currentShape = null; isDrawing = false; redraw(); }
             });
         }
 
         function getPos(e) {
             const r = canvas.getBoundingClientRect();
-            return { 
-                x: (e.clientX - r.left) * (canvas.width / r.width), 
-                y: (e.clientY - r.top) * (canvas.height / r.height) 
-            };
+            return { x: (e.clientX - r.left)*(canvas.width/r.width), y: (e.clientY - r.top)*(canvas.height/r.height) };
         }
 
         function onMouseDown(e) {
             const pos = getPos(e);
-
-            // 1. Check if clicking a Point (Edit Mode)
             const hit = checkPointHit(pos);
-            if (hit) {
-                isDragging = true;
-                dragTarget = hit;
-                selectedShape = shapes[hit.shapeIndex]; // Auto-select shape
-                updateStatus();
-                redraw();
-                return;
-            }
-
-            // 2. Check if clicking a Shape Body (Selection Mode)
+            if (hit) { isDragging = true; dragTarget = hit; selectedShape = shapes[hit.shapeIndex]; redraw(); return; }
+            
             const objHit = checkObjectHit(pos);
-            if (objHit) {
-                selectedShape = objHit;
-                updateStatus();
-                redraw();
-                return; // Stop here, don't draw new shape if selecting
-            }
+            if (objHit) { selectedShape = objHit; updateStatus(); redraw(); return; }
 
-            // 3. Drawing Logic
-            // If we are just clicking empty space, deselect, unless we are in the middle of drawing
             if(!currentShape) selectedShape = null; 
             updateStatus();
 
-            const isPoly = ['rect', 'circle', 'star', 'polygon'].includes(selectedTool);
+            const isPoly = ['polygon', 'rect', 'rounded_rect', 'circle', 'star'].includes(selectedTool);
             const type = isPoly ? 'polygon' : 'line';
-
-            if (selectedTool === 'rect' || selectedTool === 'circle' || selectedTool === 'star') {
+            
+            // Immediate Shapes
+            if (['rect', 'rounded_rect', 'circle', 'star'].includes(selectedTool)) {
                 let pts = [];
                 if (selectedTool === 'rect') pts = createRect(pos.x, pos.y);
+                else if (selectedTool === 'rounded_rect') pts = createRoundedRect(pos.x, pos.y);
                 else if (selectedTool === 'circle') pts = createCircle(pos.x, pos.y);
                 else if (selectedTool === 'star') pts = createStar(pos.x, pos.y);
                 
                 const newShape = { id: Date.now(), type: 'polygon', points: pts };
                 shapes.push(newShape);
-                selectedShape = newShape; // Select newly created shape
-                setTool('polygon'); // Reset to default tool
+                selectedShape = newShape;
+                redraw();
+                return;
+            }
 
-            } else if (selectedTool === 'freehand') {
+            // Drawing Tools
+            if (selectedTool === 'freehand') {
                 isDrawing = true;
                 currentShape = { id: Date.now(), type: 'line', points: [pos] };
                 shapes.push(currentShape);
-
             } else if (selectedTool === 'line') {
-                // 2-point line logic: Create new, or replace if not finished? 
-                // Let's make it create a new independent line every 2 clicks
                 if(!currentShape) {
                     currentShape = { id: Date.now(), type: 'line', points: [pos] };
                     shapes.push(currentShape);
                 } else {
                     currentShape.points.push(pos);
-                    currentShape = null; // Finish after 2nd point
+                    currentShape = null; 
                 }
-
-            } else if (selectedTool === 'polyline' || selectedTool === 'polygon') {
-                // Multi-point logic
+            } else {
                 if(!currentShape) {
                     currentShape = { id: Date.now(), type: type, points: [pos] };
                     shapes.push(currentShape);
@@ -524,86 +688,52 @@
                     currentShape.points.push(pos);
                 }
             }
-
             redraw();
         }
 
         function onMouseMove(e) {
             const pos = getPos(e);
-
-            if (isDragging && dragTarget) {
-                shapes[dragTarget.shapeIndex].points[dragTarget.pointIndex] = pos;
-                redraw();
-                return;
-            }
-
+            if (isDragging && dragTarget) { shapes[dragTarget.shapeIndex].points[dragTarget.pointIndex] = pos; redraw(); return; }
+            
             if (isDrawing && selectedTool === 'freehand' && currentShape) {
-                const last = currentShape.points[currentShape.points.length-1];
-                if (Math.hypot(pos.x - last.x, pos.y - last.y) > 5) {
-                    currentShape.points.push(pos);
-                    redraw();
-                }
-                return;
+                 const last = currentShape.points[currentShape.points.length-1];
+                 if (Math.hypot(pos.x - last.x, pos.y - last.y) > 5) {
+                     currentShape.points.push(pos); redraw();
+                 }
+                 return;
             }
-
-            // Cursor logic
+            
             const ptHit = checkPointHit(pos);
-            if (ptHit) canvas.style.cursor = 'move';
-            else {
-                 const objHit = checkObjectHit(pos);
-                 canvas.style.cursor = objHit ? 'pointer' : 'crosshair';
-            }
+            canvas.style.cursor = ptHit ? 'move' : checkObjectHit(pos) ? 'pointer' : 'crosshair';
         }
 
-        function onMouseUp() {
-            isDragging = false;
-            dragTarget = null;
-            if (selectedTool === 'freehand') {
-                isDrawing = false;
-                currentShape = null; 
-            }
+        function onMouseUp() { 
+            isDragging = false; dragTarget = null; 
+            if (selectedTool === 'freehand') { isDrawing = false; currentShape = null; }
         }
 
-        // --- HIT TESTING ---
         function checkPointHit(pos) {
             for (let i = shapes.length - 1; i >= 0; i--) {
                 const pts = shapes[i].points;
                 for (let j = 0; j < pts.length; j++) {
-                    if (Math.hypot(pts[j].x - pos.x, pts[j].y - pos.y) < pointRadius + 2) {
-                        return { shapeIndex: i, pointIndex: j };
-                    }
+                    if (Math.hypot(pts[j].x - pos.x, pts[j].y - pos.y) < pointRadius + 4) return { shapeIndex: i, pointIndex: j };
                 }
             }
             return null;
         }
 
         function checkObjectHit(pos) {
-            // Check top-most shape first
             for (let i = shapes.length - 1; i >= 0; i--) {
                 const s = shapes[i];
                 if (s.type === 'polygon') {
-                    // Ray casting test for polygon inside
                     ctx.beginPath();
                     ctx.moveTo(s.points[0].x, s.points[0].y);
                     for(let k=1; k<s.points.length; k++) ctx.lineTo(s.points[k].x, s.points[k].y);
                     ctx.closePath();
                     if (ctx.isPointInPath(pos.x, pos.y)) return s;
-                } else {
-                    // Distance to segment for lines
-                    for (let k=0; k<s.points.length-1; k++) {
-                        if (distToSegment(pos, s.points[k], s.points[k+1]) < 8) return s;
-                    }
                 }
             }
             return null;
-        }
-
-        function distToSegment(p, v, w) {
-            const l2 = (v.x - w.x)**2 + (v.y - w.y)**2;
-            if (l2 == 0) return Math.hypot(p.x - v.x, p.y - v.y);
-            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-            t = Math.max(0, Math.min(1, t));
-            return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
         }
 
         function redraw() {
@@ -620,57 +750,50 @@
 
                 if(isPoly) {
                     ctx.closePath();
-                    ctx.fillStyle = isSel ? 'rgba(79, 70, 229, 0.4)' : 'rgba(79, 70, 229, 0.2)';
+                    ctx.fillStyle = isSel ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.2)';
                     ctx.fill();
-                    ctx.strokeStyle = isSel ? '#ffffff' : '#4f46e5';
+                    ctx.strokeStyle = isSel ? '#ffffff' : '#6366f1';
                     ctx.lineWidth = 2;
                     ctx.stroke();
                 } else {
                     ctx.strokeStyle = isSel ? '#ffffff' : '#fbbf24';
                     ctx.lineWidth = 4;
                     ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
                     ctx.stroke();
-                    
-                    // If selected, draw a thin colored line inside the white selection to make it pop
-                    if(isSel) {
-                        ctx.strokeStyle = '#fbbf24';
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
-                    }
                 }
-
-                // Draw Vertices
+                
                 shape.points.forEach(p => {
                     ctx.beginPath(); 
                     ctx.arc(p.x, p.y, isSel ? 6 : 4, 0, 2*Math.PI);
-                    ctx.fillStyle = isPoly ? '#4f46e5' : '#fbbf24'; 
+                    ctx.fillStyle = isPoly ? '#6366f1' : '#fbbf24'; 
                     ctx.fill();
-                    ctx.strokeStyle = '#fff'; 
-                    ctx.lineWidth=1; 
-                    ctx.stroke();
+                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
                 });
             });
         }
 
-        let progressInterval;
+        // --- PROCESSING ---
         function startProcessing() {
-            if (shapes.length === 0) return alert("Please add at least one zone or line.");
+            if (shapes.length === 0) return alert("Add at least one zone or line.");
             
             const scale = firstFrameImage.width / canvas.width;
-            
-            // Separate shapes into lists for the backend
             const polygons = shapes.filter(s => s.type === 'polygon').map(s => s.points.map(p => [p.x*scale, p.y*scale]));
             const lines = shapes.filter(s => s.type === 'line').map(s => s.points.map(p => [p.x*scale, p.y*scale]));
+            
+            const startFrame = Math.floor(trimStartPct * videoTotalFrames);
+            const endFrame = Math.floor(trimEndPct * videoTotalFrames);
 
             fetch('/set_regions', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    polygons: polygons, // Send Array of Arrays
-                    lines: lines,       // Send Array of Arrays
-                    processing_fps: parseInt(document.getElementById('fpsInput').value),
-                    show_detection_area: document.getElementById('showAreaToggle').checked
+                    polygons: polygons, 
+                    lines: lines,       
+                    fps: parseInt(document.getElementById('fpsInput').value),
+                    show_detection_area: document.getElementById('showAreaToggle').checked,
+                    show_detection_line: document.getElementById('showLineToggle').checked,
+                    start_frame: startFrame, 
+                    end_frame: endFrame 
                 })
             }).then(() => {
                 document.getElementById('step-setup').classList.add('hidden');
@@ -685,7 +808,7 @@
                 const prog = data.progress || 0;
                 document.getElementById('progressBar').style.width = prog + '%';
                 document.getElementById('progressPercent').textContent = prog + '%';
-                document.getElementById('frameStats').textContent = `Frame ${data.current_frame || 0} / ${data.total_frames || 0}`;
+                document.getElementById('frameStats').textContent = `Processing Frame: ${data.current_frame}`;
                 if (data.status === 'complete') {
                     clearInterval(progressInterval);
                     document.getElementById('step-processing').classList.add('hidden');
@@ -694,13 +817,10 @@
             });
         }
 
-        function cancelProcessing() { 
-            if (confirm("Stop analysis?")) {
-                fetch('/cancel', {method: 'POST'}).then(() => location.reload()); 
-            }
-        }
-        function downloadVideo() { window.location.href = '/download_video'; }
-        function downloadExcel() { window.location.href = '/download_excel'; }
+        function cancelProcessing() { if (confirm("Stop analysis?")) fetch('/cancel', {method: 'POST'}).then(() => location.reload()); }
+        
+        function downloadVideo() { window.open('/download_video', '_blank'); }
+        function downloadExcel() { window.open('/download_excel', '_blank'); }
     </script>
 </body>
 </html>

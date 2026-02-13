@@ -21,8 +21,8 @@ os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
 # Global State
 video_path = None
-polygons_data = [] # List of lists of points
-lines_data = []    # List of lists of points
+polygons_data = [] 
+lines_data = []    
 processing_fps = 30
 processing_progress = 0
 processing_status = "idle"
@@ -36,9 +36,7 @@ show_detection_area = True
 class VehicleLineCounter:
     def __init__(self, polygons, lines, show_area=True, model_path="../best.pt"):
         self.show_area = show_area
-        # Convert all polygon point lists to numpy arrays
         self.polygons = [np.array(p, np.int32) for p in polygons]
-        # Lines are stored as lists of point tuples
         self.lines = lines 
         
         self.model = YOLO(model_path) 
@@ -55,15 +53,12 @@ class VehicleLineCounter:
         return False
 
     def intersect(self, A, B, C, D):
-        """Standard line segment intersection check"""
         def ccw(A, B, C):
             return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
         return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
 
     def crossed_any_line(self, old_pos, new_pos):
-        """Checks if movement from old_pos to new_pos crosses any segment of any line"""
         for line in self.lines:
-            # Each line can have multiple points (polyline)
             for i in range(len(line) - 1):
                 p1 = line[i]
                 p2 = line[i+1]
@@ -88,7 +83,6 @@ class VehicleLineCounter:
         return False
 
     def draw_ui(self, frame):
-        # Draw Polygons
         if self.show_area:
             overlay = frame.copy()
             for poly in self.polygons:
@@ -96,12 +90,10 @@ class VehicleLineCounter:
                 cv2.polylines(frame, [poly], True, (0, 255, 0), 2)
             cv2.addWeighted(overlay, 0.2, frame, 0.8, 0, frame)
         
-        # Draw Lines (Yellow)
         for line in self.lines:
             pts = np.array(line, np.int32)
             cv2.polylines(frame, [pts], False, (0, 255, 255), 3)
         
-        # Dashboard
         y_offset = 40
         cv2.rectangle(frame, (10, 10), (250, 40 + len(self.class_names) * 30), (0, 0, 0), -1)
         cv2.putText(frame, f"TOTAL: {self.total_count}", (20, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
@@ -114,7 +106,6 @@ class VehicleLineCounter:
         global processing_progress, processing_status, current_frame, total_frames, is_cancelled
         try:
             cap = cv2.VideoCapture(video_path)
-            orig_fps = cap.get(cv2.CAP_PROP_FPS)
             total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
             width, height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             
@@ -128,7 +119,6 @@ class VehicleLineCounter:
                 
                 current_frame = int(cap.get(cv2.CAP_PROP_POS_FRAMES))
                 
-                # YOLO Tracking
                 results = self.model.track(source=frame, persist=True, verbose=False, conf=0.25)
                 
                 if results[0].boxes and results[0].boxes.id is not None:
@@ -139,7 +129,6 @@ class VehicleLineCounter:
                     for box, tid, cls in zip(boxes, track_ids, classes):
                         center = (int((box[0] + box[2]) / 2), int((box[1] + box[3]) / 2))
                         
-                        # Only track/count if center is in at least ONE of the detection polygons
                         if self.is_inside_any_polygon(center):
                             c_name = self.class_names[cls] if cls < len(self.class_names) else "Vehicle"
                             just_crossed = self.update_tracking(tid, center, c_name)
@@ -159,13 +148,28 @@ class VehicleLineCounter:
             print(f"Error: {e}")
             processing_status = "error"
 
+    def save_to_excel(self, output_path):
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Traffic Report"
+        headers = ["Date", "Time", "Vehicle Class", "Count"]
+        ws.append(headers)
+        now = datetime.now()
+        date_str = now.strftime("%Y-%m-%d")
+        time_str = now.strftime("%H:%M:%S")
+        for class_name in self.class_names:
+            count = self.class_counts.get(class_name, 0)
+            ws.append([date_str, time_str, class_name, count])
+        ws.append([]) 
+        ws.append([date_str, time_str, "TOTAL VEHICLES", self.total_count])
+        wb.save(output_path)
+
 # --- Flask Routes ---
 
 @app.route('/set_regions', methods=['POST'])
 def set_regions():
     global polygons_data, lines_data, processing_fps, show_detection_area
     data = request.json
-    # Now receiving lists of lists from your new frontend
     polygons_data = data.get('polygons', [])
     lines_data = data.get('lines', [])
     processing_fps = int(data.get('fps', 30))
@@ -175,8 +179,10 @@ def set_regions():
 @app.route('/process', methods=['POST'])
 def process():
     global counter_instance, output_video_path, is_cancelled
+    if not video_path: return jsonify({'success': False, 'error': 'No video uploaded'})
+
     is_cancelled = False
-    output_video_path = os.path.join(app.config['OUTPUT_FOLDER'], 'output.mp4')
+    output_video_path = os.path.join(app.config['OUTPUT_FOLDER'], f'output_{datetime.now().strftime("%H%M%S")}.mp4')
     
     counter_instance = VehicleLineCounter(polygons_data, lines_data, show_area=show_detection_area)
     
@@ -188,7 +194,9 @@ def process():
 def upload_video():
     global video_path, is_cancelled
     is_cancelled = False 
+    if 'video' not in request.files: return jsonify({'success': False, 'error': 'No file part'})
     file = request.files['video']
+    if file.filename == '': return jsonify({'success': False, 'error': 'No selected file'})
     filename = secure_filename(file.filename)
     video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(video_path)
@@ -196,9 +204,11 @@ def upload_video():
 
 @app.route('/first_frame')
 def get_first_frame():
+    if not video_path or not os.path.exists(video_path): return jsonify({'error': 'Video not uploaded'}), 400
     cap = cv2.VideoCapture(video_path)
     ret, frame = cap.read()
     cap.release()
+    if not ret: return jsonify({'error': 'Could not read frame'}), 500
     _, buffer = cv2.imencode('.jpg', frame)
     img_base64 = base64.b64encode(buffer).decode('utf-8')
     return jsonify({'image': f'data:image/jpeg;base64,{img_base64}'})
@@ -206,28 +216,6 @@ def get_first_frame():
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
-@app.route('/process', methods=['POST'])
-def process_video():
-    global video_path, detection_area, counting_line, processing_fps, show_detection_area
-    global counter_instance, processing_status, processing_progress, output_video_path, is_cancelled
-    
-    is_cancelled = False
-    output_video_path = os.path.join(app.config['OUTPUT_FOLDER'], f'out_{datetime.now().strftime("%H%M%S")}.mp4')
-    
-    # Initialize instance with the show_area flag
-    counter_instance = VehicleLineCounter(
-        detection_area, 
-        counting_line, 
-        show_area=show_detection_area, 
-        model_path="../best.pt"
-    )
-    
-    thread = threading.Thread(target=counter_instance.process_video, args=(video_path, output_video_path, processing_fps))
-    thread.daemon = True
-    thread.start()
-    return jsonify({'success': True})
 
 @app.route('/cancel', methods=['POST'])
 def cancel_processing():
@@ -238,22 +226,38 @@ def cancel_processing():
 @app.route('/progress')
 def get_progress():
     global processing_progress, processing_status, current_frame, total_frames
-    return jsonify({
-        'progress': processing_progress, 
-        'status': processing_status,
-        'current_frame': current_frame,
-        'total_frames': total_frames
-    })
+    return jsonify({'progress': processing_progress, 'status': processing_status, 'current_frame': current_frame, 'total_frames': total_frames})
 
 @app.route('/download_video')
 def download_video():
-    return send_file(output_video_path, as_attachment=True)
+    # Improved Check: If global path is missing, try to find the last created file in outputs
+    global output_video_path
+    
+    if output_video_path and os.path.exists(output_video_path):
+        return send_file(output_video_path, as_attachment=True)
+        
+    # Fallback: Look for the most recent mp4 file
+    files = [os.path.join(app.config['OUTPUT_FOLDER'], f) for f in os.listdir(app.config['OUTPUT_FOLDER']) if f.endswith('.mp4')]
+    if files:
+        latest_file = max(files, key=os.path.getctime)
+        return send_file(latest_file, as_attachment=True)
+        
+    return "Video not ready", 404
 
 @app.route('/download_excel')
 def download_excel():
     excel_path = os.path.join(app.config['OUTPUT_FOLDER'], 'report.xlsx')
-    counter_instance.save_to_excel(excel_path)
-    return send_file(excel_path, as_attachment=True)
+    
+    # Priority 1: If we have an active counter in memory, save fresh data
+    if counter_instance:
+        counter_instance.save_to_excel(excel_path)
+        return send_file(excel_path, as_attachment=True, download_name='report.xlsx')
+
+    # Priority 2: If no memory instance (server restart), check if file exists on disk
+    if os.path.exists(excel_path):
+         return send_file(excel_path, as_attachment=True, download_name='report.xlsx')
+         
+    return "No data processed yet. Please run analysis first.", 404
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
