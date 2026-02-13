@@ -131,3 +131,4 @@ The app will start at `http://localhost:5000`
 
 ## Notes
 Processing time depends on video length and resolution. The system processes each frame for accurate tracking, so longer videos will take more time. Progress is shown in real-time with percentage and frame counts.
+

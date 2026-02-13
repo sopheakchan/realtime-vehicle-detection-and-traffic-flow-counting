@@ -15,10 +15,14 @@ yarn-error.log*
 
 # ======================
 # Environment variables
-# ======================
-.env
-.env.*
-!.env.example
+
+myenv/
+venv/
+.venv/
+env/
+bin/
+lib/
+include/
 
 # ======================
 # Node.js

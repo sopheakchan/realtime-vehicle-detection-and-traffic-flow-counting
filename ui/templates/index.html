@@ -3,418 +3,824 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detection & Counting</title>
+    <title>AI Traffic Analysis | Dark Mode</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            /* Dark Mode Color Palette */
+            --bg-main: #0f172a;        /* Slate 900 */
+            --bg-card: #1e293b;        /* Slate 800 */
+            --bg-input: #334155;       /* Slate 700 */
+            --primary: #6366f1;        /* Indigo 500 */
+            --primary-hover: #4f46e5;  /* Indigo 600 */
+            --text-main: #f1f5f9;      /* Slate 100 */
+            --text-muted: #94a3b8;     /* Slate 400 */
+            --border: #334155;
+            --accent-timeline: #fbbf24; /* Amber 400 */
+            --danger: #ef4444;
+            --sidebar-width: 70px;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: #ffffff;
-            color: #333;
-            padding: 20px;
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 40px 20px;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 24px;
-            font-weight: 600;
-        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 2.5rem; font-weight: 800; color: white; letter-spacing: -1px; margin-bottom: 8px; }
+        .subtitle { color: var(--text-muted); font-size: 1.1rem; }
+
         .section {
-            background: #f8f8f8;
-            border: 1px solid #ddd;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .section h2 { font-size: 1.3rem; margin-bottom: 20px; font-weight: 600; color: white; display: flex; align-items: center; gap: 10px; }
+
+        /* Configuration Grid */
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
             padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            background: #020617; /* Very Dark */
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
-        .section h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-        #step-upload {
-            max-width: 1100px;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 40px;
-        }
-        #step-upload h2 {
-            font-size: 22px;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
-        .upload-zone {
-            border: 3px dashed #ccc;
+
+        .config-item { display: flex; flex-direction: column; gap: 10px; }
+        .config-item label { font-weight: 600; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input[type="number"] {
+            background: var(--bg-input);
+            color: white;
+            border: 1px solid var(--border);
+            padding: 12px;
             border-radius: 8px;
-            padding: 80px 40px;
-            text-align: center;
-            background: #fafafa;
-            transition: all 0.3s ease;
-            margin-bottom: 25px;
-            cursor: pointer;
-        }
-        .upload-zone:hover {
-            border-color: #999;
-            background: #f5f5f5;
-        }
-        .upload-icon {
-            font-size: 48px;
-            color: #999;
-            margin-bottom: 20px;
-            pointer-events: none;
-        }
-        .upload-text {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 10px;
-            pointer-events: none;
-        }
-        .upload-hint {
-            font-size: 14px;
-            color: #999;
-            pointer-events: none;
-        }
-        #step-upload button {
-            padding: 16px 50px;
             font-size: 16px;
-            font-weight: 500;
         }
-        input[type="file"] {
-            display: block;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
+        input[type="number"]:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+        /* Toggle Switches */
+        .toggle-group { display: flex; flex-direction: column; gap: 15px; }
+        .toggle-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .toggle-item input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+        .toggle-item label { cursor: pointer; color: var(--text-main); text-transform: none; font-size: 15px; }
+
+        /* --- TIMELINE SLIDER --- */
+        .timeline-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #020617;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 10px;
-        }
-        button {
-            background: #000;
-            color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
             font-size: 14px;
-            margin-right: 10px;
+            color: var(--accent-timeline);
+            font-weight: 700;
+            font-family: monospace;
         }
-        button:hover {
-            background: #333;
-        }
-        button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        #canvas-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        canvas {
-            border: 1px solid #ddd;
-            cursor: crosshair;
-            max-width: 100%;
-        }
-        .instruction {
-            text-align: center;
-            padding: 10px;
-            background: #f0f0f0;
-            border-radius: 4px;
-            margin: 10px 0;
-            font-size: 14px;
-        }
-        .progress-container {
-            width: 100%;
-            background: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 20px 0;
+        .slider-track {
+            position: relative;
             height: 40px;
-            position: relative;
+            background: #334155;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
         }
-        .progress-bar {
-            height: 100%;
-            background: #000;
-            width: 0%;
-            transition: width 0.3s ease;
-            position: relative;
-        }
-        .progress-text {
+        .slider-fill {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #333;
-            font-size: 14px;
-            font-weight: 600;
+            height: 100%;
+            background: rgba(99, 102, 241, 0.3);
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+            top: 0;
+            z-index: 1;
+        }
+        .slider-handle {
+            position: absolute;
+            width: 20px;
+            height: 100%;
+            background: var(--accent-timeline);
+            top: 0;
+            cursor: ew-resize;
             z-index: 2;
-        }
-        .progress-text.light {
-            color: #fff;
-        }
-        .downloads {
+            border-radius: 4px;
             display: flex;
-            gap: 10px;
+            align-items: center;
             justify-content: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
-        .hidden {
-            display: none;
+        .slider-handle::after {
+            content: ''; height: 15px; width: 2px;
+            border-left: 2px solid rgba(0,0,0,0.4); border-right: 2px solid rgba(0,0,0,0.4);
         }
+        .handle-left { left: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+        .handle-right { right: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+
+        /* --- WORKSPACE --- */
+        .workspace {
+            display: flex;
+            background: #000;
+            border-radius: 12px;
+            overflow: visible; /* Changed to visible for flyouts */
+            border: 1px solid var(--border);
+            min-height: 600px;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 15px;
+            border-right: 1px solid var(--border);
+            z-index: 10;
+        }
+
+        /* --- ILLUSTRATOR STYLE TOOLBAR --- */
+        .tool-wrapper {
+            position: relative;
+            width: 44px;
+            height: 44px;
+        }
+        
+        /* The main visible button */
+        .tool-btn {
+            width: 100%; height: 100%;
+            border-radius: 6px; border: none; background: transparent;
+            color: #94a3b8; cursor: pointer; transition: all 0.2s;
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .tool-btn:hover { background: var(--bg-input); color: white; }
+        .tool-btn.active { background: var(--primary); color: white; }
+        /* SVG Styling fixes */
+        .tool-btn svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .tool-btn svg.fill-current { fill: currentColor; stroke: none; }
+
+        /* The tiny triangle indicating hidden options */
+        .has-options::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            width: 0; 
+            height: 0; 
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 4px solid currentColor;
+            opacity: 0.7;
+        }
+
+        /* The Flyout Menu */
+        .tool-flyout {
+            position: absolute;
+            left: 50px; /* Push to right of sidebar */
+            top: 0;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 4px 4px 15px rgba(0,0,0,0.5);
+            width: 50px;
+            z-index: 100;
+        }
+
+        /* Show flyout on hover of wrapper */
+        .tool-wrapper:hover .tool-flyout {
+            display: flex;
+        }
+
+        .canvas-area { flex-grow: 1; display: flex; flex-direction: column; background: #000; position: relative; overflow: hidden; border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+        
+        .workspace-header {
+            padding: 10px 20px;
+            background: #0f172a;
+            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between;
+        }
+        #canvas-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; overflow: auto; }
+
+        /* --- UPLOAD ZONE --- */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 80px;
+            text-align: center;
+            background: rgba(30, 41, 59, 0.5);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .upload-zone:hover, .upload-zone.dragover { border-color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+        .upload-icon { font-size: 48px; margin-bottom: 15px; filter: grayscale(1); }
+
+        /* --- BUTTONS --- */
+        .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 30px; }
+        button {
+            background: var(--primary); color: white; border: none;
+            padding: 14px 30px; border-radius: 8px; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: 0.2s;
+        }
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        button.btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        button.btn-danger:hover { background: var(--danger); color: white; }
+
+        .hidden { display: none; }
+        .progress-container { width: 100%; height: 6px; background: var(--bg-input); border-radius: 10px; overflow: hidden; margin: 20px 0; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Real-Time Vehicle Detection and Traffic Flow Counting Sytem</h1>
+        <header>
+            <h1>AI Traffic Analysis</h1>
+            <div class="subtitle">Advanced Computer Vision System</div>
+        </header>
         
+        <!-- STEP 1: UPLOAD -->
         <div class="section" id="step-upload">
-            <h2>Step 1: Upload Video</h2>
-            <div class="upload-zone" onclick="document.getElementById('videoFile').click()">
-                <div class="upload-icon">📁</div>
-                <div class="upload-text" id="uploadText">Click or Drag Video File Here</div>
-                <div class="upload-hint">Supported formats: MP4, AVI, MOV</div>
+            <h2>🎥 1. Video Selection</h2>
+            <div class="upload-zone" id="dropZone" onclick="document.getElementById('videoFile').click()">
+                <div class="upload-icon">📤</div>
+                <div id="uploadText" style="font-weight: 500; color: var(--text-muted);">Click or Drag Video File Here</div>
             </div>
             <input type="file" id="videoFile" accept="video/*" style="display: none;" onchange="handleFileSelect()">
-            <button onclick="uploadVideo()">Upload Video</button>
+            <div class="btn-group"><button onclick="uploadVideo()">Upload & Initialize</button></div>
         </div>
         
+        <!-- STEP 2: SETUP -->
         <div class="section hidden" id="step-setup">
-            <h2>Step 2: Define Regions</h2>
-            <div class="instruction" id="instruction">Click 4 points to define detection area</div>
-            <div id="canvas-container">
-                <canvas id="canvas"></canvas>
+            <h2>⚙️ 2. Configuration & Zones</h2>
+            
+            <div class="config-grid">
+                <!-- Timeline Trimmer -->
+                <div class="config-item" style="grid-column: 1 / -1;">
+                    <label>Video Timeline Trimmer</label>
+                    <div class="timeline-container">
+                        <div class="timeline-header">
+                            <span id="timeStart">00:00</span>
+                            <span id="timeDuration">Duration: 0s</span>
+                            <span id="timeEnd">00:00</span>
+                        </div>
+                        <div class="slider-track" id="sliderTrack">
+                            <div class="slider-fill" id="sliderFill"></div>
+                            <div class="slider-handle handle-left" id="handleLeft"></div>
+                            <div class="slider-handle handle-right" id="handleRight"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-item">
+                    <label>Processing FPS</label>
+                    <input type="number" id="fpsInput" value="30" min="1" max="120">
+                </div>
+                
+                <div class="config-item toggle-group">
+                    <div class="toggle-item">
+                        <input type="checkbox" id="showAreaToggle" checked>
+                        <label for="showAreaToggle">Show Detection Polygons</label>
+                    </div>
+                    <div class="toggle-item">
+                        <input type="checkbox" id="showLineToggle" checked>
+                        <label for="showLineToggle">Show Counting Lines</label>
+                    </div>
+                </div>
             </div>
-            <button onclick="startProcessing()">Start Processing</button>
+
+            <div class="workspace">
+                <div class="sidebar">
+                    <div style="font-size:10px; color:var(--text-muted); font-weight:700; margin-bottom:5px;">TOOLS</div>
+                    
+                    <!-- DETECTION ZONES GROUP (Default: Rectangle) -->
+                    <div class="tool-wrapper">
+                        <button class="tool-btn active has-options" id="btn-group-polygon" title="Detection Zones">
+                            <!-- Rectangle Tool Icon (Illustrator Style) -->
+                            <svg id="icon-display-polygon" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="0" />
+                            </svg>
+                        </button>
+                        <div class="tool-flyout">
+                            <!-- Rectangle -->
+                            <button class="tool-btn" onclick="setTool('rect')" title="Rectangle" id="sub-tool-rect">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" /></svg>
+                            </button>
+                            <!-- Rounded Rect -->
+                            <button class="tool-btn" onclick="setTool('rounded_rect')" title="Rounded Rectangle" id="sub-tool-rounded_rect">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" /></svg>
+                            </button>
+                            <!-- Circle/Ellipse -->
+                            <button class="tool-btn" onclick="setTool('circle')" title="Ellipse" id="sub-tool-circle">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /></svg>
+                            </button>
+                            <!-- Polygon -->
+                            <button class="tool-btn" onclick="setTool('polygon')" title="Polygon" id="sub-tool-polygon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2L2 8.5L5.5 21H18.5L22 8.5L12 2Z" /></svg>
+                            </button>
+                            <!-- Star -->
+                            <button class="tool-btn" onclick="setTool('star')" title="Star" id="sub-tool-star">
+                                <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DETECTION LINES GROUP (Default: Pen Tool) -->
+                    <div class="tool-wrapper">
+                        <button class="tool-btn has-options" id="btn-group-line" title="Counting Lines">
+                            <!-- Pen Tool Icon (Illustrator Style) -->
+                            <svg id="icon-display-line" viewBox="0 0 24 24" class="fill-current">
+                                <path d="M15.5 4.5l-1.5 1.5 4 4 1.5-1.5c0.5-0.5 0.5-1.5 0-2l-2-2c-0.5-0.5-1.5-0.5-2 0zM13 7l-9 9v4h4l9-9-4-4z" />
+                            </svg>
+                        </button>
+                        <div class="tool-flyout">
+                            <!-- Pen Tool (Adjustable/Polyline) -->
+                            <button class="tool-btn" onclick="setTool('polyline')" title="Pen Tool" id="sub-tool-polyline">
+                                <svg viewBox="0 0 24 24" class="fill-current"><path d="M15.5 4.5l-1.5 1.5 4 4 1.5-1.5c0.5-0.5 0.5-1.5 0-2l-2-2c-0.5-0.5-1.5-0.5-2 0zM13 7l-9 9v4h4l9-9-4-4z" /></svg>
+                            </button>
+                            <!-- Line Segment -->
+                            <button class="tool-btn" onclick="setTool('line')" title="Line Segment" id="sub-tool-line">
+                                <svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="4" /></svg>
+                            </button>
+                            <!-- Freehand/Pencil -->
+                            <button class="tool-btn" onclick="setTool('freehand')" title="Pencil Tool" id="sub-tool-freehand">
+                                <svg viewBox="0 0 24 24" class="fill-current"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="width: 40px; height: 1px; background: var(--border);"></div>
+                    <!-- DELETE BUTTON -->
+                    <button class="tool-btn" onclick="deleteSelected()" style="color:var(--danger)" title="Delete">
+                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" class="fill-current"/></svg>
+                    </button>
+                </div>
+
+                <div class="canvas-area">
+                    <div class="workspace-header">
+                        <div id="instruction" style="color: var(--text-muted); font-size:13px;">📍 Draw zones</div>
+                        <div id="selectionStatus" style="color: var(--primary); font-size:12px; font-weight:700;">Ready</div>
+                    </div>
+                    <div id="canvas-container"><canvas id="canvas"></canvas></div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button onclick="startProcessing()">🚀 Start Analysis</button>
+                <button class="btn-danger" onclick="clearAll()">Reset All</button>
+            </div>
         </div>
         
+        <!-- STEP 3: PROCESSING -->
         <div class="section hidden" id="step-processing">
-            <h2>Processing Video</h2>
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-                <div class="progress-text" id="progressText">0%</div>
+            <h2>🧠 Processing Video...</h2>
+            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+            <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:14px;">
+                <span id="progressPercent">0%</span>
+                <span id="frameStats">Initializing...</span>
             </div>
+            <div class="btn-group"><button class="btn-danger" onclick="cancelProcessing()">Stop Analysis</button></div>
         </div>
         
+        <!-- STEP 4: COMPLETE -->
         <div class="section hidden" id="step-complete">
-            <h2>Processing Complete</h2>
-            <div class="downloads">
-                <button onclick="downloadVideo()">Download Counted Video</button>
-                <button onclick="downloadExcel()">Download Excel Report</button>
+            <h2 style="color: #10b981;">✅ Analysis Complete</h2>
+            <div class="btn-group">
+                <button onclick="downloadVideo()">Download Video</button>
+                <button style="background:#10b981" onclick="downloadExcel()">Download Excel</button>
+                <button style="background:var(--bg-input)" onclick="location.reload()">Start New</button>
             </div>
         </div>
     </div>
 
     <script>
-        let canvas, ctx;
-        let detectionPoints = [];
-        let linePoints = [];
-        let phase = 'detection';
-        let firstFrameImage = null;
+        // --- GLOBAL VARS ---
+        let canvas, ctx, firstFrameImage;
+        let shapes = []; 
+        let currentShape = null; 
+        let selectedShape = null; 
+        let selectedTool = 'rect'; // Default to Rectangle for Polygons
+        let isDrawing = false;
+        let isDragging = false;
+        let dragTarget = null; 
+        const pointRadius = 6;
+
+        // Timeline Vars
+        let videoDuration = 0; 
+        let videoTotalFrames = 0;
+        let videoFPS = 0;
+        let trimStartPct = 0; 
+        let trimEndPct = 1;   
+
+        // --- FILE HANDLING ---
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('videoFile');
+        const uploadText = document.getElementById('uploadText');
         
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {e.preventDefault(); e.stopPropagation();}, false);
+        });
+
+        dropZone.addEventListener('dragover', () => dropZone.classList.add('dragover'));
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', e => {
+            dropZone.classList.remove('dragover');
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect();
+        });
+
         function handleFileSelect() {
-            const fileInput = document.getElementById('videoFile');
-            const uploadText = document.getElementById('uploadText');
-            if (fileInput.files.length) {
-                uploadText.textContent = fileInput.files[0].name;
-            }
+            if(fileInput.files.length) uploadText.textContent = "Selected: " + fileInput.files[0].name;
         }
         
         function uploadVideo() {
-            const fileInput = document.getElementById('videoFile');
-            if (!fileInput.files.length) {
-                alert('Please select a video file');
-                return;
-            }
+            if (!fileInput.files.length) return alert('Select file first');
             const formData = new FormData();
             formData.append('video', fileInput.files[0]);
+            uploadText.textContent = "Uploading & Analyzing...";
+            
             fetch('/upload', {method: 'POST', body: formData})
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) loadFirstFrame();
-                else alert('Upload failed: ' + data.error);
-            });
+                .then(res => res.json())
+                .then(data => data.success ? loadFirstFrame() : alert(data.error));
         }
-        
+
         function loadFirstFrame() {
-            fetch('/first_frame')
-            .then(response => response.json())
-            .then(data => {
+            fetch('/first_frame').then(res => res.json()).then(data => {
+                videoDuration = data.duration_sec;
+                videoTotalFrames = data.total_frames;
+                videoFPS = data.fps;
+                initTimeline();
+
                 const img = new Image();
-                img.onload = function() {
+                img.onload = () => {
                     document.getElementById('step-upload').classList.add('hidden');
                     document.getElementById('step-setup').classList.remove('hidden');
                     canvas = document.getElementById('canvas');
                     ctx = canvas.getContext('2d');
-                    const maxWidth = 960;
-                    const scale = Math.min(1, maxWidth / img.width);
-                    canvas.width = img.width * scale;
-                    canvas.height = img.height * scale;
+                    const scale = Math.min(1, 1000 / img.width);
+                    canvas.width = img.width * scale; canvas.height = img.height * scale;
                     firstFrameImage = img;
+                    initCanvasEvents();
                     redraw();
-                    canvas.addEventListener('click', handleClick);
                 };
                 img.src = data.image;
             });
         }
-        
-        function handleClick(event) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const x = (event.clientX - rect.left) * scaleX;
-            const y = (event.clientY - rect.top) * scaleY;
+
+        // --- TIMELINE LOGIC ---
+        function initTimeline() {
+            const track = document.getElementById('sliderTrack');
+            const handleL = document.getElementById('handleLeft');
+            const handleR = document.getElementById('handleRight');
+            const fill = document.getElementById('sliderFill');
             
-            if (phase === 'detection') {
-                detectionPoints.push({x, y});
-                if (detectionPoints.length === 4) {
-                    phase = 'line';
-                    document.getElementById('instruction').textContent = 'Click 2 points to define counting line';
-                }
-                redraw();
-            } else if (phase === 'line') {
-                linePoints.push({x, y});
-                if (linePoints.length === 2) {
-                    phase = 'complete';
-                    document.getElementById('instruction').textContent = 'Setup complete. Click Start Processing to begin';
-                    canvas.style.cursor = 'default';
-                }
-                redraw();
+            let isDraggingL = false;
+            let isDraggingR = false;
+
+            updateTimelineUI();
+
+            handleL.addEventListener('mousedown', (e) => { isDraggingL = true; e.preventDefault(); });
+            handleR.addEventListener('mousedown', (e) => { isDraggingR = true; e.preventDefault(); });
+            window.addEventListener('mouseup', () => { isDraggingL = false; isDraggingR = false; });
+            window.addEventListener('mousemove', (e) => {
+                if (!isDraggingL && !isDraggingR) return;
+                const rect = track.getBoundingClientRect();
+                let pct = (e.clientX - rect.left) / rect.width;
+                pct = Math.max(0, Math.min(1, pct));
+                if (isDraggingL) trimStartPct = Math.min(pct, trimEndPct - 0.05);
+                else if (isDraggingR) trimEndPct = Math.max(pct, trimStartPct + 0.05);
+                updateTimelineUI();
+            });
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
+        function updateTimelineUI() {
+            const handleL = document.getElementById('handleLeft');
+            const handleR = document.getElementById('handleRight');
+            const fill = document.getElementById('sliderFill');
+            
+            handleL.style.left = (trimStartPct * 100) + '%';
+            handleR.style.left = 'auto'; handleR.style.right = ((1 - trimEndPct) * 100) + '%';
+            fill.style.left = (trimStartPct * 100) + '%';
+            fill.style.width = ((trimEndPct - trimStartPct) * 100) + '%';
+
+            const startTime = trimStartPct * videoDuration;
+            const endTime = trimEndPct * videoDuration;
+            document.getElementById('timeStart').textContent = formatTime(startTime);
+            document.getElementById('timeEnd').textContent = formatTime(endTime);
+            document.getElementById('timeDuration').textContent = `Duration: ${(endTime - startTime).toFixed(1)}s`;
+        }
+
+        // --- GEOMETRY GENERATORS ---
+        function createRect(cx, cy, w=200, h=150) {
+            return [
+                {x: cx - w/2, y: cy - h/2}, {x: cx + w/2, y: cy - h/2},
+                {x: cx + w/2, y: cy + h/2}, {x: cx - w/2, y: cy + h/2}
+            ];
+        }
+        function createRoundedRect(cx, cy, w=200, h=150, r=20) {
+            let pts = [];
+            const steps = 6;
+            const x = cx - w/2, y = cy - h/2;
+            pts.push({x: x+r, y: y}); pts.push({x: x+w-r, y: y});
+            for(let i=1; i<=steps; i++) { let a = -Math.PI/2 + (i/steps)*Math.PI/2; pts.push({x: x+w-r + Math.cos(a)*r, y: y+r + Math.sin(a)*r}); }
+            pts.push({x: x+w, y: y+h-r});
+            for(let i=1; i<=steps; i++) { let a = 0 + (i/steps)*Math.PI/2; pts.push({x: x+w-r + Math.cos(a)*r, y: y+h-r + Math.sin(a)*r}); }
+            pts.push({x: x+r, y: y+h});
+            for(let i=1; i<=steps; i++) { let a = Math.PI/2 + (i/steps)*Math.PI/2; pts.push({x: x+r + Math.cos(a)*r, y: y+h-r + Math.sin(a)*r}); }
+            pts.push({x: x, y: y+r});
+            for(let i=1; i<=steps; i++) { let a = Math.PI + (i/steps)*Math.PI/2; pts.push({x: x+r + Math.cos(a)*r, y: y+r + Math.sin(a)*r}); }
+            return pts;
+        }
+        function createCircle(cx, cy, radius=80, steps=20) {
+            let pts = [];
+            for(let i=0; i<steps; i++) {
+                let angle = (i / steps) * Math.PI * 2;
+                pts.push({ x: cx + Math.cos(angle)*radius, y: cy + Math.sin(angle)*radius });
             }
+            return pts;
+        }
+        function createStar(cx, cy, outer=80, inner=30, points=5) {
+            let pts = [];
+            let angle = Math.PI / points;
+            for(let i=0; i<2*points; i++) {
+                let r = (i % 2 === 0) ? outer : inner;
+                let currA = i * angle - Math.PI/2;
+                pts.push({ x: cx + Math.cos(currA)*r, y: cy + Math.sin(currA)*r });
+            }
+            return pts;
+        }
+
+        // --- DRAWING LOGIC ---
+        function setTool(tool) {
+            selectedTool = tool;
+            if(currentShape) { currentShape = null; isDrawing = false; }
+            
+            const polygonTypes = ['polygon', 'rect', 'rounded_rect', 'circle', 'star'];
+            const lineTypes = ['line', 'polyline', 'freehand'];
+            
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (polygonTypes.includes(tool)) {
+                document.getElementById('btn-group-polygon').classList.add('active');
+                // Update Parent Icon
+                const subBtn = document.getElementById('sub-tool-' + tool);
+                if(subBtn) document.getElementById('icon-display-polygon').innerHTML = subBtn.querySelector('svg').innerHTML;
+            } else if (lineTypes.includes(tool)) {
+                document.getElementById('btn-group-line').classList.add('active');
+                // Update Parent Icon
+                const subBtn = document.getElementById('sub-tool-' + tool);
+                if(subBtn) document.getElementById('icon-display-line').innerHTML = subBtn.querySelector('svg').innerHTML;
+            }
+
+            const instructionMap = {
+                'polygon': "Click to add points. Right-click to finish.",
+                'rect': "Click to place Rectangle",
+                'rounded_rect': "Click to place Rounded Rectangle",
+                'circle': "Click to place Circle",
+                'star': "Click to place Star",
+                'line': "Click start, Click end.",
+                'polyline': "Click points. Right-click to finish (Adjustable).",
+                'freehand': "Drag mouse to draw."
+            };
+            document.getElementById('instruction').textContent = instructionMap[tool] || "Select a tool";
+        }
+
+        function deleteSelected() {
+            if (!selectedShape) return alert("Select a shape first.");
+            shapes = shapes.filter(s => s !== selectedShape);
+            selectedShape = null; redraw(); updateStatus();
         }
         
-        function redraw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(firstFrameImage, 0, 0, canvas.width, canvas.height);
-            
-            if (detectionPoints.length > 0) {
-                ctx.strokeStyle = '#FF0000';
-                ctx.fillStyle = '#FF0000';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(detectionPoints[0].x, detectionPoints[0].y);
-                for (let i = 1; i < detectionPoints.length; i++) {
-                    ctx.lineTo(detectionPoints[i].x, detectionPoints[i].y);
-                }
-                if (detectionPoints.length === 4) {
-                    ctx.closePath();
-                    ctx.globalAlpha = 0.2;
-                    ctx.fillStyle = '#00FF00';
-                    ctx.fill();
-                    ctx.globalAlpha = 1.0;
-                    ctx.strokeStyle = '#00FF00';
-                }
-                ctx.stroke();
-                detectionPoints.forEach((p, i) => {
-                    ctx.fillStyle = '#FF0000';
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
-                    ctx.fill();
-                    ctx.fillStyle = '#000';
-                    ctx.font = '14px Arial';
-                    ctx.fillText(i + 1, p.x + 10, p.y);
-                });
-            }
-            
-            if (linePoints.length > 0) {
-                ctx.strokeStyle = '#FFFF00';
-                ctx.fillStyle = '#FFFF00';
-                ctx.lineWidth = 5;
-                if (linePoints.length === 2) {
-                    ctx.beginPath();
-                    ctx.moveTo(linePoints[0].x, linePoints[0].y);
-                    ctx.lineTo(linePoints[1].x, linePoints[1].y);
-                    ctx.stroke();
-                }
-                linePoints.forEach((p, i) => {
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, 5, 0, 2 * Math.PI);
-                    ctx.fill();
-                });
-            }
+        function clearAll() {
+            if(confirm("Reset all?")) { shapes = []; selectedShape = null; currentShape = null; redraw(); }
         }
-        
-        function startProcessing() {
-            if (detectionPoints.length !== 4 || linePoints.length !== 2) {
-                alert('Please complete the setup first');
+
+        function updateStatus() {
+            const el = document.getElementById('selectionStatus');
+            el.textContent = selectedShape ? `${selectedShape.type.toUpperCase()} SELECTED` : "READY";
+        }
+
+        function initCanvasEvents() {
+            canvas.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                if(currentShape) { currentShape = null; isDrawing = false; redraw(); }
+            });
+        }
+
+        function getPos(e) {
+            const r = canvas.getBoundingClientRect();
+            return { x: (e.clientX - r.left)*(canvas.width/r.width), y: (e.clientY - r.top)*(canvas.height/r.height) };
+        }
+
+        function onMouseDown(e) {
+            const pos = getPos(e);
+            const hit = checkPointHit(pos);
+            if (hit) { isDragging = true; dragTarget = hit; selectedShape = shapes[hit.shapeIndex]; redraw(); return; }
+            
+            const objHit = checkObjectHit(pos);
+            if (objHit) { selectedShape = objHit; updateStatus(); redraw(); return; }
+
+            if(!currentShape) selectedShape = null; 
+            updateStatus();
+
+            const isPoly = ['polygon', 'rect', 'rounded_rect', 'circle', 'star'].includes(selectedTool);
+            const type = isPoly ? 'polygon' : 'line';
+            
+            // Immediate Shapes
+            if (['rect', 'rounded_rect', 'circle', 'star'].includes(selectedTool)) {
+                let pts = [];
+                if (selectedTool === 'rect') pts = createRect(pos.x, pos.y);
+                else if (selectedTool === 'rounded_rect') pts = createRoundedRect(pos.x, pos.y);
+                else if (selectedTool === 'circle') pts = createCircle(pos.x, pos.y);
+                else if (selectedTool === 'star') pts = createStar(pos.x, pos.y);
+                
+                const newShape = { id: Date.now(), type: 'polygon', points: pts };
+                shapes.push(newShape);
+                selectedShape = newShape;
+                redraw();
                 return;
             }
-            const scale = firstFrameImage.width / canvas.width;
-            const detection_area = detectionPoints.map(p => [p.x * scale, p.y * scale]);
-            const counting_line = linePoints.map(p => [p.x * scale, p.y * scale]);
+
+            // Drawing Tools
+            if (selectedTool === 'freehand') {
+                isDrawing = true;
+                currentShape = { id: Date.now(), type: 'line', points: [pos] };
+                shapes.push(currentShape);
+            } else if (selectedTool === 'line') {
+                if(!currentShape) {
+                    currentShape = { id: Date.now(), type: 'line', points: [pos] };
+                    shapes.push(currentShape);
+                } else {
+                    currentShape.points.push(pos);
+                    currentShape = null; 
+                }
+            } else {
+                if(!currentShape) {
+                    currentShape = { id: Date.now(), type: type, points: [pos] };
+                    shapes.push(currentShape);
+                } else {
+                    currentShape.points.push(pos);
+                }
+            }
+            redraw();
+        }
+
+        function onMouseMove(e) {
+            const pos = getPos(e);
+            if (isDragging && dragTarget) { shapes[dragTarget.shapeIndex].points[dragTarget.pointIndex] = pos; redraw(); return; }
             
+            if (isDrawing && selectedTool === 'freehand' && currentShape) {
+                 const last = currentShape.points[currentShape.points.length-1];
+                 if (Math.hypot(pos.x - last.x, pos.y - last.y) > 5) {
+                     currentShape.points.push(pos); redraw();
+                 }
+                 return;
+            }
+            
+            const ptHit = checkPointHit(pos);
+            canvas.style.cursor = ptHit ? 'move' : checkObjectHit(pos) ? 'pointer' : 'crosshair';
+        }
+
+        function onMouseUp() { 
+            isDragging = false; dragTarget = null; 
+            if (selectedTool === 'freehand') { isDrawing = false; currentShape = null; }
+        }
+
+        function checkPointHit(pos) {
+            for (let i = shapes.length - 1; i >= 0; i--) {
+                const pts = shapes[i].points;
+                for (let j = 0; j < pts.length; j++) {
+                    if (Math.hypot(pts[j].x - pos.x, pts[j].y - pos.y) < pointRadius + 4) return { shapeIndex: i, pointIndex: j };
+                }
+            }
+            return null;
+        }
+
+        function checkObjectHit(pos) {
+            for (let i = shapes.length - 1; i >= 0; i--) {
+                const s = shapes[i];
+                if (s.type === 'polygon') {
+                    ctx.beginPath();
+                    ctx.moveTo(s.points[0].x, s.points[0].y);
+                    for(let k=1; k<s.points.length; k++) ctx.lineTo(s.points[k].x, s.points[k].y);
+                    ctx.closePath();
+                    if (ctx.isPointInPath(pos.x, pos.y)) return s;
+                }
+            }
+            return null;
+        }
+
+        function redraw() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            if(firstFrameImage) ctx.drawImage(firstFrameImage, 0, 0, canvas.width, canvas.height);
+
+            shapes.forEach(shape => {
+                const isSel = (shape === selectedShape);
+                const isPoly = shape.type === 'polygon';
+                
+                ctx.beginPath();
+                if(shape.points.length > 0) ctx.moveTo(shape.points[0].x, shape.points[0].y);
+                shape.points.forEach(p => ctx.lineTo(p.x, p.y));
+
+                if(isPoly) {
+                    ctx.closePath();
+                    ctx.fillStyle = isSel ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.2)';
+                    ctx.fill();
+                    ctx.strokeStyle = isSel ? '#ffffff' : '#6366f1';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                } else {
+                    ctx.strokeStyle = isSel ? '#ffffff' : '#fbbf24';
+                    ctx.lineWidth = 4;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                }
+                
+                shape.points.forEach(p => {
+                    ctx.beginPath(); 
+                    ctx.arc(p.x, p.y, isSel ? 6 : 4, 0, 2*Math.PI);
+                    ctx.fillStyle = isPoly ? '#6366f1' : '#fbbf24'; 
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+                });
+            });
+        }
+
+        // --- PROCESSING ---
+        function startProcessing() {
+            if (shapes.length === 0) return alert("Add at least one zone or line.");
+            
+            const scale = firstFrameImage.width / canvas.width;
+            const polygons = shapes.filter(s => s.type === 'polygon').map(s => s.points.map(p => [p.x*scale, p.y*scale]));
+            const lines = shapes.filter(s => s.type === 'line').map(s => s.points.map(p => [p.x*scale, p.y*scale]));
+            
+            const startFrame = Math.floor(trimStartPct * videoTotalFrames);
+            const endFrame = Math.floor(trimEndPct * videoTotalFrames);
+
             fetch('/set_regions', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({detection_area, counting_line})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('step-setup').classList.add('hidden');
-                    document.getElementById('step-processing').classList.remove('hidden');
-                    fetch('/process', {method: 'POST'})
-                    .then(response => response.json())
-                    .then(() => checkProgress());
+                body: JSON.stringify({
+                    polygons: polygons, 
+                    lines: lines,       
+                    fps: parseInt(document.getElementById('fpsInput').value),
+                    show_detection_area: document.getElementById('showAreaToggle').checked,
+                    show_detection_line: document.getElementById('showLineToggle').checked,
+                    start_frame: startFrame, 
+                    end_frame: endFrame 
+                })
+            }).then(() => {
+                document.getElementById('step-setup').classList.add('hidden');
+                document.getElementById('step-processing').classList.remove('hidden');
+                fetch('/process', {method: 'POST'});
+                progressInterval = setInterval(checkProgress, 1000);
+            });
+        }
+
+        function checkProgress() {
+            fetch('/progress').then(res => res.json()).then(data => {
+                const prog = data.progress || 0;
+                document.getElementById('progressBar').style.width = prog + '%';
+                document.getElementById('progressPercent').textContent = prog + '%';
+                document.getElementById('frameStats').textContent = `Processing Frame: ${data.current_frame}`;
+                if (data.status === 'complete') {
+                    clearInterval(progressInterval);
+                    document.getElementById('step-processing').classList.add('hidden');
+                    document.getElementById('step-complete').classList.remove('hidden');
                 }
             });
         }
+
+        function cancelProcessing() { if (confirm("Stop analysis?")) fetch('/cancel', {method: 'POST'}).then(() => location.reload()); }
         
-        function checkProgress() {
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            
-            const interval = setInterval(() => {
-                fetch('/progress')
-                .then(response => response.json())
-                .then(data => {
-                    const progress = data.progress || 0;
-                    const currentFrame = data.current_frame || 0;
-                    const totalFrames = data.total_frames || 0;
-                    
-                    progressBar.style.width = progress + '%';
-                    
-                    // Show percentage and frame count
-                    if (totalFrames > 0) {
-                        progressText.textContent = `${progress}% (${currentFrame}/${totalFrames})`;
-                    } else {
-                        progressText.textContent = `${progress}%`;
-                    }
-                    
-                    // Change text color based on progress
-                    if (progress > 50) {
-                        progressText.classList.add('light');
-                    } else {
-                        progressText.classList.remove('light');
-                    }
-                    
-                    if (data.status === 'complete') {
-                        clearInterval(interval);
-                        progressBar.style.width = '100%';
-                        progressText.textContent = `100% (${totalFrames}/${totalFrames})`;
-                        progressText.classList.add('light');
-                        setTimeout(() => {
-                            document.getElementById('step-processing').classList.add('hidden');
-                            document.getElementById('step-complete').classList.remove('hidden');
-                        }, 500);
-                    } else if (data.status === 'error') {
-                        clearInterval(interval);
-                        alert('Processing error occurred. Check console for details.');
-                    }
-                });
-            }, 1000);
-        }
-        
-        function downloadVideo() {
-            window.location.href = '/download_video';
-        }
-        
-        function downloadExcel() {
-            window.location.href = '/download_excel';
-        }
+        function downloadVideo() { window.open('/download_video', '_blank'); }
+        function downloadExcel() { window.open('/download_excel', '_blank'); }
     </script>
 </body>
 </html>
